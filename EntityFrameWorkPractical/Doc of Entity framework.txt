@@ -143,3 +143,66 @@ List the models and their datbase table names.
 Instantiates a db connection during application runtime.
 allows for on creation customization and custom table configurations.
 
+{
+DB Context is a standard class that you'd get with entity framework core that basically says, I'm turning
+
+this regular C-sharp class into an actual database context class that represents the database.
+
+So now data models that are outlined are expected to be mapped back to actual tables.
+
+We also get access to certain methods, so we get access to a method called on configuring.
+
+Now you'll see that it is being overridden in this block of code.
+
+And what happens is that there are default configurations, but then you may want to override it to
+
+add things like your connection string and any resiliency options that you want on the database connection,
+
+stuff like that.
+
+You put that in on configuring, on model creating.
+
+That's where you will outline different configurations for the tables, like different constraints that
+
+you may want on different fields in the tables, in the actual database.
+
+So when it is creating the actual database, it will look at on model creating to know what it should
+
+be doing and what kind of SQL or DDL statements it should be defining to enact all of the constraints
+
+that you have outlined in on model creating.
+
+Then below we have the list of what we call DB sets.
+
+So you'll notice that we would have already created coach and team classes, right?
+
+So coach here is as a DB set of type coach and you'll see DB set of type team and you'll see other ones.
+
+So we're going to be creating other tables obviously.
+
+But the point here is that the DB set now represents the actual table in the database.
+
+So we're saying that I want a table or a DB set modeled off the class called Team and in the database
+
+I want it to be called teams.
+
+And of course it's public.
+
+So we get on set and that's basically it.
+
+So for every new table that you're going to be adding, you just need to put on a property public.
+
+DB Set the data type and its name.
+
+That should map back to the name in the database.
+
+Of course there are overrides and there are different ways to do certain things, but once again, once
+
+you follow the naming conventions, you don't have to do a lot of extra stuff outside of extenuating
+
+circumstances.
+
+So now that we have a clearer picture of what the DB context is all about, lets us jump back into the
+
+code and create our own.
+}
