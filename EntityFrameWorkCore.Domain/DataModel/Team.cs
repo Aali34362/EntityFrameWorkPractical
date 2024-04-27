@@ -2,7 +2,7 @@
 
 namespace EntityFrameWorkCore.Domain.DataModel;
 
-public partial class Coach : BaseEntity
+public partial class Team : BaseEntity
 {
-    public string Name { get; set; } = string.Empty;
+    public string TeamName { get; set; } = string.Empty;
 }

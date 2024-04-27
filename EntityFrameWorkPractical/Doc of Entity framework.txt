@@ -1,0 +1,145 @@
+EF : 
+Offical Object Relational Mapper
+EF Core is an open source ORM library with Apis that make 
+it easy for use to interact with our database while writing code.
+
+Benefits :
+Increases productivity while eliminating repeating code and 
+allowing you to connect to may data stores while retaining a consistent code.
+
+
+
+
+
+Entity Framework (EF) is a popular object-relational mapping (ORM) framework for .NET applications developed by Microsoft. 
+It simplifies data manipulation by allowing developers to work with data using higher-level abstraction objects 
+rather than dealing with the underlying database tables and SQL directly. 
+It’s an essential tool for developers working in the Microsoft ecosystem who need to interact with relational databases like SQL Server, SQLite, MySQL, and others.
+
+Key Features of Entity Framework
+ORM Support: Entity Framework maps CLR (Common Language Runtime) objects to database tables and automatically handles basic CRUD operations
+ (Create, Read, Update, Delete).
+
+LINQ Support: It integrates with Language Integrated Query (LINQ), allowing developers to write queries in C# instead of SQL, 
+which can be more secure and maintainable.
+
+Code-First Approach: Developers can generate database schemas from the code itself using the Code-First approach, 
+which allows a database to be created based on model classes.
+
+Database-First Approach: In contrast to the Code-First approach, 
+Database-First allows developers to generate model classes and relationships based on an existing database schema.
+
+Model-First Approach: This approach involves designing a model in a designer and then generating 
+both the database schema and the corresponding code from the model.
+
+Migrations: Entity Framework supports migrations, which are a way to update the database schema over time as the application evolves without losing existing data.
+
+Caching: EF includes built-in support for caching which helps improve performance by storing some parts of the data in memory.
+
+Configurations: Developers can configure the framework to suit their needs, including lazy loading, eager loading, and explicit loading for handling data retrieval.
+Versions of Entity Framework
+
+Entity Framework (EF6 and earlier): The original version known as Entity Framework is still widely used. 
+It is a mature ORM with a wealth of features but only supports .NET Framework applications.
+
+Entity Framework Core (EF Core): This is a lighter, extensible, and cross-platform version of Entity Framework that supports .NET Core and later versions, including .NET 5/6/7. It is actively developed and often includes new features and performance improvements over its predecessor.
+Common Use Cases
+Enterprise Applications: EF is commonly used in enterprise applications for managing database interactions more efficiently and writing less SQL code.
+Rapid Development: EF can significantly speed up development time in projects where database management is a core component, thanks to its powerful scaffolding capabilities.
+Applications Requiring Strongly-Typed Data Access: Since EF integrates directly with the .NET language runtime, it offers strongly-typed data access, which can improve both performance and safety.
+Pros and Cons
+Pros:
+
+Reduces the amount of boilerplate code for database operations.
+Integrates seamlessly with .NET applications.
+Supports complex data types and LINQ queries.
+Cons:
+
+Can introduce overhead compared to raw SQL, especially in complex queries or large datasets.
+May result in suboptimal SQL queries if not used carefully, potentially impacting performance.
+Entity Framework is a powerful tool for .NET developers, providing a rich set of features for interacting with relational databases in a managed and developer-friendly way. Whether to use Entity Framework or another tool may depend on specific project requirements and the expertise of the development team.
+
+
+
+LINQ, which stands for Language Integrated Query, is a powerful feature of the .NET framework that provides a consistent model for querying various types of data sources. Introduced with .NET Framework 3.5 in 2007, LINQ brings querying capabilities directly into the C# (and VB.NET) languages, abstracting the complexity of data manipulation processes.
+
+Core Features of LINQ
+Unified Query Syntax: LINQ allows developers to use a consistent query syntax across different data sources, such as arrays, lists, XML, relational databases, and even remote services.
+Extensible: Developers can extend LINQ to query custom data sources. Many third-party libraries take advantage of this to integrate LINQ with non-traditional data stores.
+Strongly Typed: Queries are strongly typed, which provides compile-time checking of all queries and offers IntelliSense support in development environments like Visual Studio.
+Debugging Support: Since LINQ is integrated into .NET, it benefits from the robust debugging tools available in .NET development environments.
+Functional Style: LINQ queries are written using a declarative style of programming similar to SQL, which can make them easier to understand and modify.
+Main Components of LINQ
+LINQ to Objects: This allows queries over any IEnumerable or IEnumerable<T> collections directly in memory. For example, querying a List or an array in C#.
+LINQ to SQL (DLINQ): This translates LINQ queries into SQL and executes them against a SQL Server database, returning results as objects. It's a simple ORM.
+LINQ to Entities: This is part of the Entity Framework and provides a more sophisticated ORM solution than LINQ to SQL, with support for a variety of database engines.
+LINQ to XML (XLINQ): This provides the ability to query XML documents elegantly and efficiently, treating XML elements and attributes as part of the queryable data model.
+Parallel LINQ (PLINQ): An extension of LINQ to Objects that supports parallel execution of queries to leverage multi-core processors for improved performance.
+Examples of LINQ Queries
+Here’s a basic example of a LINQ query in C# that filters and orders a list of integers:
+
+csharp
+Copy code
+List<int> numbers = new List<int> { 1, 2, 3, 4, 5, 6 };
+
+var evenNumbers = from num in numbers
+                  where num % 2 == 0
+                  orderby num descending
+                  select num;
+
+foreach (var n in evenNumbers)
+{
+    Console.WriteLine(n);
+}
+This will output:
+
+Copy code
+6
+4
+2
+This example uses query syntax, which is similar to SQL. Alternatively, the same functionality can be achieved using method syntax, which uses extension methods and lambda expressions:
+
+csharp
+Copy code
+var evenNumbers = numbers.Where(n => n % 2 == 0).OrderByDescending(n => n);
+Pros and Cons of LINQ
+Pros:
+
+Consistency across different data sources.
+Improved readability and maintainability of code.
+Compile-time checking of queries.
+Integration with .NET, allowing for a seamless development experience.
+Cons:
+
+Performance overhead in some cases, especially with complex queries or very large data sets.
+Steep learning curve for developers not familiar with functional programming concepts or SQL.
+Potential for misuse, leading to inefficient queries if not used carefully.
+LINQ is a versatile tool that can dramatically simplify data handling and querying tasks in .NET applications, making it a valuable skill for developers working in the Microsoft technology stack.
+
+
+In the context of software development, particularly when dealing with databases in an application, the term "Database Context" usually refers to a central class in an Object-Relational Mapping (ORM) framework that manages the database operations for a specific database. This concept is commonly used in ORMs like Entity Framework, where it is known as the "DbContext" class.
+
+What is DbContext in Entity Framework?
+DbContext is an essential part of Entity Framework, representing a session with the underlying database using which you can perform CRUD (Create, Read, Update, Delete) operations on your entities. It acts as a bridge between your C# application and the database.
+
+Key Responsibilities of DbContext
+Managing Database Connections: DbContext is responsible for managing the connection to your database. It encapsulates the database connection and configuration, which are used to perform all the data operations.
+Querying: Provides the capability to query the database using LINQ (Language Integrated Query), which translates your LINQ queries into SQL queries that are then executed against the database.
+Change Tracking: Keeps track of changes made to objects since they were fetched or since the last commit. This enables the DbContext to update the database with changes when SaveChanges() is called.
+Caching: Implements first-level caching by default. This means that during the lifespan of the DbContext instance, any entity fetched more than once will be retrieved from the cache, not the database.
+Transaction Management: Supports transactions, allowing several operations to be combined into a single unit of work that either fully succeeds or fully fails, ensuring data integrity.
+Migrations: DbContext can be used to manage migrations, which are a way to update the database schema over time as the application evolves.
+Lifecycle of DbContext
+The lifecycle of a DbContext includes instantiation, use, and disposal:
+
+Instantiation: A DbContext instance is created. This instance is typically scoped to a request in web applications, meaning a new instance is created for each request.
+Usage: During its life, the DbContext is used to perform operations such as querying and saving data. Its change tracking mechanism will monitor any changes made to the objects retrieved using it.
+Disposal: After the operations are complete, the DbContext should be disposed of to free up the resources it was using, particularly the database connection. This is typically handled automatically if using dependency injection in frameworks like ASP.NET Core.
+
+
+Database Context : 
+Abstraction of the database structure in code
+List the models and their datbase table names.
+Instantiates a db connection during application runtime.
+allows for on creation customization and custom table configurations.
+
