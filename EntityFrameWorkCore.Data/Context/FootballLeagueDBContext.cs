@@ -1,27 +1,34 @@
-﻿using EntityFrameWorkCore.Domain.DataModel;
+﻿using Dumpify;
+using EntityFrameWorkCore.Domain.DataModel;
 using Microsoft.EntityFrameworkCore;
-using SQLitePCL;
+using Microsoft.Extensions.Logging;
 
 namespace EntityFrameWorkCore.Data.Context;
 
 public class FootballLeagueDBContext : DbContext
 {
-
-    //public FootballLeagueDBContext(DbContextOptions options) : base(options)
-    //{
-
-    //}
-
     public DbSet<Team> teams { get; set; }
     public DbSet<Coach> coaches { get; set; }
+    public string DbPath { get; private set; }
+    // Private Set : This is similar to set, but it restricts access to the setter to within the class where the property is defined. It's useful when you want to allow external code to read the property but not modify it directly.
+    //
+    public FootballLeagueDBContext()
+    {
+        var folder = Environment.SpecialFolder.LocalApplicationData;
+        var path = Environment.GetFolderPath(folder);
+        DbPath = Path.Combine(path, "FootballLeague_EFCore.db");
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         //optionsBuilder
         //    .UseSqlServer("Server=UCHIHA_MADARA\\SQLEXPRESS;Database=FootballLeague;User=UCHIHA_MADARA\\aa882;Password=; " +
         //    "MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=true;Connection Timeout=6000;Trusted_Connection=True;");
-
-        optionsBuilder.UseSqlite($"Data Source=FootballLeague_EFCore.db");
+        
+        optionsBuilder.UseSqlite($"Data Source={DbPath}")
+            .LogTo(Console.WriteLine, LogLevel.Information)//Logging the information
+            .EnableSensitiveDataLogging()// not to use in production just for educational purpose to look into data traversing 
+            .EnableDetailedErrors();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
