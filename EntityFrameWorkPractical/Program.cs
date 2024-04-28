@@ -1,6 +1,56 @@
-﻿using EntityFrameWorkCore.Data.Context;
+﻿using Bogus;
+using EntityFrameWorkCore.Data.Context;
 using EntityFrameWorkCore.Domain.DataModel;
 using Microsoft.EntityFrameworkCore;
+
+
+using var sqlitecontext = new FootballLeagueDBContext();
+
+////Selecting a single record - first one in the list
+//var teamOne = await sqlitecontext.coaches.FirstAsync();
+//var teamOnes = await sqlitecontext.coaches.FirstOrDefaultAsync();
+
+////Selecting a single record - first one in the list that meets the condition
+//var teamtwo = await sqlitecontext.coaches.FirstAsync( x=> x.Name == "npkri");
+//var teamtwos = await sqlitecontext.coaches.FirstOrDefaultAsync(x => x.Name == "fvrun");
+
+////Selecting a single record - Only one record should be returned
+//try
+//{
+//    var teamthree = await sqlitecontext.teams.SingleAsync();
+//}
+//catch (Exception) { throw; }
+//var teamthrees = await sqlitecontext.teams.SingleAsync(team => team.TeamName.Equals("umrcpvtbzy"));
+
+//var teamfour = await sqlitecontext.teams.SingleOrDefaultAsync();
+//var teamfours = await sqlitecontext.teams.SingleOrDefaultAsync(team => team.TeamName.Equals("umrcpvtbzy"));
+
+//Selecting based on ID
+Guid Id = Guid.Parse("36CB09E6-45A9-4ED9-87A3-A13F8CB82E94");
+var teamBasedOnId = await sqlitecontext.teams.FindAsync(Id);
+Console.WriteLine(teamBasedOnId.TeamName);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -9,7 +59,7 @@ using Microsoft.EntityFrameworkCore;
 var yourClass = new YourClass();
 await yourClass.GetAllTeams();
 
-var firstTeam = await yourClass.GetFirstTeam();
+var firstTeam = await yourClass.GetFirstTeam("88750200-9FCC-4C91-909D-969F1F421634");
 if (firstTeam != null)
 {
     Console.WriteLine($"First team: {firstTeam.TeamName}");
@@ -56,11 +106,14 @@ public class YourClass
         }
     }
 
-    public async Task<Team> GetFirstTeam()
+    public async Task<Team> GetFirstTeam(string Id)
     {
         try
         {
-            var team = await _context.teams.FirstOrDefaultAsync();
+            Guid id = Guid.Parse(Id);
+            var team = await _context
+                .teams
+                .FirstOrDefaultAsync( x=> (x.Id == id));
             return team;
         }
         catch (Exception ex)
@@ -70,6 +123,4 @@ public class YourClass
             return null;
         }
     }
-
-    // Additional methods...
 }
