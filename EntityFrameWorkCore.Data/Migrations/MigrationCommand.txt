@@ -1,3 +1,10 @@
 Add-Migration InitialMigration
 Remove-Migration
 Update-Database
+
+for more than one db context in same project we have to mention the Context Name.
+
+when we add data in FootballLeagueDBContext OnModelCreating()
+Add-Migration SeededTeams -Context FootballLeagueDBContext
+Update-Database -Context FootballLeagueDBContext
+Remove-Migration -Context FootballLeagueDBContext
