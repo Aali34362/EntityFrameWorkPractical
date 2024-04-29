@@ -30,7 +30,26 @@ Guid Id = Guid.Parse("36CB09E6-45A9-4ED9-87A3-A13F8CB82E94");
 var teamBasedOnId = await sqlitecontext.teams.FindAsync(Id);
 Console.WriteLine(teamBasedOnId.TeamName);
 
+await GetFilteredTeams();
 
+
+
+
+
+
+
+async Task GetFilteredTeams()
+{
+    //Filter
+    //Select all record that meet a condition 
+    Console.WriteLine("Enter Desired Team");
+    var desiredTeam = Console.ReadLine();
+    var teamsFilter = await sqlitecontext.teams.Where(x => x.TeamName.Equals(desiredTeam)).ToListAsync();
+    foreach (var team in teamsFilter)
+    {
+        Console.WriteLine(team.TeamName);
+    }
+}
 
 
 
