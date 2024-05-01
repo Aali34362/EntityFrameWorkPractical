@@ -16,11 +16,44 @@ await GetIQueryable();
 async Task GetIQueryable()
 {
     //IQueryables vs List Types
-    Console.WriteLine("Enter '1' for team with Id 1 or 2 for teams that contain 'F.C'");
+    Console.WriteLine("Enter '10' for team with members 10 or 12 for teams that contain 'Q'");
     var option = Convert.ToInt32(Console.ReadLine());
-    
-}
+    List<Team> teamsAsList = [];
 
+    //after executing ToListAsync, the records are loaded into memory. Any operation is then done in memory
+    teamsAsList = await sqlitecontext.teams.ToListAsync();
+    if(option == 1)
+    {
+        teamsAsList = teamsAsList
+            .Where(q => q.TeamMembers == 10 )
+            .ToList();
+    }
+    else if(option == 2)
+    {
+        teamsAsList = teamsAsList
+            .Where(q => q.TeamName.Contains("q"))
+            .ToList();
+    }
+    foreach(var t in teamsAsList) { Console.WriteLine(t.TeamName); }
+
+    //Records stay as IQueryable until the ToListAsync is executed, then the final query is performed.
+    var teamsAsQuerable = sqlitecontext.teams.AsQueryable();
+    if (option == 1)
+    {
+        teamsAsQuerable = teamsAsQuerable
+            .Where(q => q.TeamMembers == 10);
+    }
+    else if (option == 2)
+    {
+        teamsAsQuerable = teamsAsQuerable
+            .Where(q => q.TeamName.Contains("q"));
+    }
+    foreach (var t in teamsAsList) { Console.WriteLine(t.TeamName); }
+    
+    // in list we called all the data and then filtered out the data
+    // in asqueryable() we seek the condition where ever its declared and then bring exact data related to condition of filter.
+
+}
 async Task GetNoTrackingandTracking()
 {
     //No Tracking - EF core tracks objects that are returned by queries
