@@ -5,13 +5,24 @@ using Microsoft.EntityFrameworkCore;
 using var sqlitecontext = new FootballLeagueDBContext();
 
 
-await GetTeams();
-await GetFilteredTeams();
-await GetAllTeamsQuerySyntax();
-await GetAggregateMethods();
-await GetProjections();
+//await GetTeams();
+//await GetFilteredTeams();
+//await GetAllTeamsQuerySyntax();
+//await GetAggregateMethods();
+//await GetProjections();
+await GetNoTrackingandTracking();
 
 
+async Task GetNoTrackingandTracking()
+{
+    //No Tracking - EF core tracks objects that are returned by queries
+    //This is less useful in disconnected application like Apis and web apps
+
+    var teams = await sqlitecontext
+        .teams
+        .AsNoTracking()
+        .ToListAsync();
+}
 
 async Task GetProjections()
 {
@@ -29,7 +40,6 @@ async Task GetProjections()
         .ToListAsync();
     foreach (var teams in teamProjection) { Console.WriteLine(teams.Id + " " + teams.TeamName); }
 
-
     var teamProjections = await sqlitecontext
             .teams
             .Select(a => new TeamInfo
@@ -44,8 +54,6 @@ async Task GetProjections()
     }
 
 }
-
-
 async Task GetAggregateMethods()
 {
     var numerOfTeams = await sqlitecontext.teams.CountAsync();
@@ -221,13 +229,13 @@ async Task GetFilteredTeams()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 var yourClass = new YourClass();
-await yourClass.GetAllTeams();
+//await yourClass.GetAllTeams();
 
-var firstTeam = await yourClass.GetFirstTeam("88750200-9FCC-4C91-909D-969F1F421634");
-if (firstTeam != null)
-{
-    Console.WriteLine($"First team: {firstTeam.TeamName}");
-}
+//var firstTeam = await yourClass.GetFirstTeam("88750200-9FCC-4C91-909D-969F1F421634");
+//if (firstTeam != null)
+//{
+//    Console.WriteLine($"First team: {firstTeam.TeamName}");
+//}
 
 // Dispose of the resources when done
 yourClass.Dispose();

@@ -26,6 +26,7 @@ public class FootballLeagueDBContext : DbContext
         //    "MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=true;Connection Timeout=6000;Trusted_Connection=True;");
         
         optionsBuilder.UseSqlite($"Data Source={DbPath}")
+            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             .LogTo(Console.WriteLine, LogLevel.Information)//Logging the information
             .EnableSensitiveDataLogging()// not to use in production just for educational purpose to look into data traversing 
             .EnableDetailedErrors();
