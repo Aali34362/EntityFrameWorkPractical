@@ -40,6 +40,7 @@ public class FootballLeagueDBContext : DbContext
                 {
                     Id = Guid.NewGuid(),
                     TeamName = GenerateRandomString(10),
+                    TeamMembers = 10,
                     Act_Ind = 1,
                     Del_Ind = 0,
                     Crtd_User = GenerateRandomString(7),
@@ -49,6 +50,7 @@ public class FootballLeagueDBContext : DbContext
                 {
                     Id = Guid.NewGuid(),
                     TeamName = GenerateRandomString(10),
+                    TeamMembers = 12,
                     Act_Ind = 1,
                     Del_Ind = 0,
                     Crtd_User = GenerateRandomString(7),
@@ -58,6 +60,7 @@ public class FootballLeagueDBContext : DbContext
                 {
                     Id = Guid.NewGuid(),
                     TeamName = GenerateRandomString(10),
+                    TeamMembers = 9,
                     Act_Ind = 1,
                     Del_Ind = 0,
                     Crtd_User = GenerateRandomString(7),
@@ -67,6 +70,7 @@ public class FootballLeagueDBContext : DbContext
                 {
                     Id = Guid.NewGuid(),
                     TeamName = GenerateRandomString(10),
+                    TeamMembers = 15,
                     Act_Ind = 1,
                     Del_Ind = 0,
                     Crtd_User = GenerateRandomString(7),
@@ -76,6 +80,7 @@ public class FootballLeagueDBContext : DbContext
                 {
                     Id = Guid.NewGuid(),
                     TeamName = GenerateRandomString(10),
+                    TeamMembers = 6,
                     Act_Ind = 1,
                     Del_Ind = 0,
                     Crtd_User = GenerateRandomString(7),

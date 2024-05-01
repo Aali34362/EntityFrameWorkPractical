@@ -11,7 +11,15 @@ using var sqlitecontext = new FootballLeagueDBContext();
 //await GetAggregateMethods();
 //await GetProjections();
 await GetNoTrackingandTracking();
+await GetIQueryable();
 
+async Task GetIQueryable()
+{
+    //IQueryables vs List Types
+    Console.WriteLine("Enter '1' for team with Id 1 or 2 for teams that contain 'F.C'");
+    var option = Convert.ToInt32(Console.ReadLine());
+    
+}
 
 async Task GetNoTrackingandTracking()
 {
@@ -23,7 +31,6 @@ async Task GetNoTrackingandTracking()
         .AsNoTracking()
         .ToListAsync();
 }
-
 async Task GetProjections()
 {
     //Select and projections - more precise queries
