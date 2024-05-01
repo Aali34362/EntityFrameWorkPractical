@@ -9,9 +9,41 @@ await GetTeams();
 await GetFilteredTeams();
 await GetAllTeamsQuerySyntax();
 await GetAggregateMethods();
+await GetProjections();
 
 
 
+async Task GetProjections()
+{
+    //Select and projections - more precise queries
+    var teamNames = await sqlitecontext
+        .teams
+        .Select(a => a.TeamName)
+        .ToListAsync();
+    foreach(var names in teamNames) { Console.WriteLine(names); }
+
+    //Projection
+    var teamProjection = await sqlitecontext
+        .teams
+        .Select(a => new { a.TeamName, a.Id })
+        .ToListAsync();
+    foreach (var teams in teamProjection) { Console.WriteLine(teams.Id + " " + teams.TeamName); }
+
+
+    var teamProjections = await sqlitecontext
+            .teams
+            .Select(a => new TeamInfo
+            { 
+                TeamName = a.TeamName, 
+                TeamId = a.Id
+             })
+            .ToListAsync();
+    foreach (var teams in teamProjections) 
+    { 
+        Console.WriteLine($"{teams.TeamId} {teams.TeamName}");
+    }
+
+}
 
 
 async Task GetAggregateMethods()
@@ -96,7 +128,6 @@ async Task GetAggregateMethods()
         page++;
     }
 }
-
 async Task GetTeams()
 {
     //Selecting a single record - first one in the list
@@ -188,30 +219,7 @@ async Task GetFilteredTeams()
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//////////////////////////////////////////////////////////////////////////////////////////
 var yourClass = new YourClass();
 await yourClass.GetAllTeams();
 
@@ -223,13 +231,6 @@ if (firstTeam != null)
 
 // Dispose of the resources when done
 yourClass.Dispose();
-
-
-
-
-
-
-
 
 public class YourClass
 {
@@ -279,4 +280,10 @@ public class YourClass
             return null;
         }
     }
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+public class TeamInfo
+{
+    public Guid TeamId { get; set; }
+    public string? TeamName { get; set; }
 }
