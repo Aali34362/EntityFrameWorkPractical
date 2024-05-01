@@ -49,7 +49,52 @@ async Task GetAggregateMethods()
 
     var groupMultipleTeams = sqlitecontext.teams.GroupBy(x => new { x.Crtd_Date.Date, x.TeamName, x.Act_Ind, x.Del_Ind });
 
+    var orderedAscTeams = await sqlitecontext
+        .teams
+        .OrderBy(a => a.TeamName)
+        .ToListAsync();
 
+    var orderedDescTeams = await sqlitecontext
+        .teams
+        .OrderByDescending(a => a.TeamName)
+        .ToListAsync();
+
+    var MaxByDesc = sqlitecontext
+        .teams
+        .OrderByDescending(a => a.Id)
+        .FirstOrDefaultAsync();
+
+    var MaxBy = sqlitecontext.teams.MaxBy(a => a.Id);
+
+    var MinByDesc = sqlitecontext
+        .teams
+        .OrderByDescending(a => a.Id)
+        .LastOrDefaultAsync();
+
+    var MinBy = sqlitecontext.teams.MinBy(a => a.Id);
+
+    //Skip and take - Great for Paging
+    var recordCount = 3;
+    var page = 0;
+    var next = true;
+
+    while(next)
+    {
+        var teams = await sqlitecontext
+            .teams
+            .Skip(page * recordCount)
+            .Take(recordCount)
+            .ToListAsync();
+
+        foreach(var team in teams)
+        {
+            Console.WriteLine(team.TeamName);
+        }
+        Console.WriteLine("Emter 'true' for the next set of records, 'False' to exit");
+        next = Convert.ToBoolean(Console.ReadLine());
+        if (!next) break;
+        page++;
+    }
 }
 
 async Task GetTeams()
