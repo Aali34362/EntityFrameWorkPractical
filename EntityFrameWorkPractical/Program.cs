@@ -5,14 +5,47 @@ using Microsoft.EntityFrameworkCore;
 using var sqlitecontext = new FootballLeagueDBContext();
 
 
+//////////////////Insert
+await InsertTeams();
+
+
+////////////////////Get////////////////////
 //await GetTeams();
 //await GetFilteredTeams();
 //await GetAllTeamsQuerySyntax();
 //await GetAggregateMethods();
 //await GetProjections();
-await GetNoTrackingandTracking();
-await GetIQueryable();
+//await GetNoTrackingandTracking();
+//await GetIQueryable();
 
+
+
+
+
+///////////////////////INSERT////////////////////////
+async Task InsertTeams()
+{
+    //Inserting Data
+    //InsertTeams into coaches (cols) values (values)
+
+
+    //Simple Insert
+    var newCoach = new Coach
+    {
+        Name = "XYZ"
+    };
+    await sqlitecontext.coaches.AddAsync(newCoach);
+    await sqlitecontext.SaveChangesAsync();
+    //Loop Insert
+
+    //Batch Insert
+
+    //Bulk Insert
+}
+
+
+
+/////////////////////GET///////////////////////////
 async Task GetIQueryable()
 {
     //IQueryables vs List Types

@@ -206,3 +206,126 @@ So now that we have a clearer picture of what the DB context is all about, lets 
 
 code and create our own.
 }
+
+
+
+
+
+
+
+
+
+------------------------------------------------------
+Tracking 
+It works best when the same DbContext instance is used to both query for entities and change them.
+(
+So that when we're writing a query of course we need a DB Context.
+We are not limited to only having one Db context, but whenever we write the query and perform the query with
+a particular instance of the DB context, unless we specifically state otherwise, then whatever
+is returned is being tracked.
+And so what this is saying is that when we make our changes and we're going to do what we call save
+changes, it's important to reuse that same DB context to be able to efficiently see what has changed
+since the query was executed and when the changes are being submitted.
+)
+
+Ef Core automatically tracks the state of queried entities and then detects any changes made to these entities when SaveChanges() is called
+(
+So if Core automatically tracks the state of the queried entities and 
+detects any changes made to these
+entities, when the save changes or save changes is sync method is called.
+)
+
+DetectChanges() is called during the save changes operation to detect what is different in the tracking.
+(
+Now there's another method called detect changes which is called during the Save Changes operation.
+This is a method that we can call manually if we want it to actually see what has changed between the
+query and the saving operation.
+However, it is a method that actually gets called automatically during the Save Changes operation.
+)
+Now another thing that we can pay attention to when we're talking about tracking is the state.
+
+
+Entity State changes based on the operation that has been carried out on an entity
+(
+So the entity state is relative to the operation that has been carried out on the entity.
+So here we have a list of entity states.
+)
+
+Detached :
+First state is detached.
+So if we run a query and say as no tracking, then everything is in a detached state.
+It's not being tracked.
+
+Added : 
+Whenever we are adding something, meaning we have created a new object that we want to add to the database,
+then it is now in a state of added.
+So when save changes executes, then it will see okay, I need to insert 
+
+Unchanged :
+we have unchanged, which means 
+that we did a query, we looked at the data, but we haven't changed anything about the data.
+So when we're probably saving changes, it's going to look at what is being tracked.
+Nothing has happened to these entities, so they are in an unchanged state.
+
+Modified :
+Then we have modified, which means that, well, self explanatory, something has changed.
+So I sent you X and I got back Y for this record.
+So this has been modified.
+
+Deleted :
+We also have deleted.
+So when we're removing something from the database, we can change the state to delete it so that when
+the save changes is executing, it will see that now it should delete this particular record or these
+records.
+
+Now add, attach and update methods, work on entities and related entities, which means that when
+we're looking at our relationships section of this course, we're going to be able to see that we can
+actually query one record and have all of the related data come back with that record.
+
+Now, when we use Add, attach and update, we're actually going to change the state of not only the
+parent record, but also all of the other records that are related.
+
+So it's important to understand these behaviors.
+
+Now with that in mind, we do have the option to change the state of the exact entity that we are changing,
+which means that if you have an entity that has related data but you really only updated the particular
+entity, then you can always change the state manually so that it doesn't ripple down to all the children.
+
+Once again, we're going to be looking at all of this in detail.
+
+Now, this is a table from Microsoft's documentation that shows the different entity states and the
+different actions that will happen when changes are saved.
+So it's good to appreciate the different states and what the entity framework core or the DB context
+will try to do based on the states that we put the entity in.
+
+Saving Changes :
+
+SaveChanges() is a method that is used to confirm pending changes to database records
+(
+Now I keep on talking about save changes, so saving changes in core.
+Whenever we modify data, we have to save the changes.
+So you have save changes and you have saved changes async.
+
+And of course we know that it is better to use the asynchronous version of the methods where applicable,
+but either one represents a method that is used to confirm the pending changes being made to the database
+records.
+)
+
+SaveChanges() is transactional(for most providers)
+All entity changes either succeed or fail
+No partial changes
+(
+So one thing about save changes that we need to appreciate is that it is transactional.
+So in a database situation, when we talk about a transaction, it means that everything that is being
+done will either be successful or it will fail.
+
+This means that there are no partial changes.
+
+So if we have three entities that we made changes to and then we save changes, if one of these entities
+fails, then the entire operation is Thrown out.
+
+None of these three entities will be changed.
+
+So that behavior is also very important for us to appreciate and know how to maneuver.
+So now that we have an appreciation for tracking changes and saving changes, let us jump into an activity
+where we look at how we can add data to the database.
