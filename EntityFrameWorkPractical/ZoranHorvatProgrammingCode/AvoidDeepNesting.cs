@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace EntityFrameWorkPractical;
+namespace EntityFrameWorkPractical.ZoranHorvatProgrammingCode;
 
 public class AvoidDeepNesting
 {
@@ -181,7 +181,7 @@ public class AvoidDeepNesting
     public Book? TryFindBookFinal(IEnumerable<Book> books, string hint) =>
         string.IsNullOrWhiteSpace(hint) ? null :
          books.FirstOrDefault(book => IsBookMatch(hint.Trim(), book));
-    
+
     private bool IsBookMatch(string hint, Book book) =>
         IsMatch(hint, book.Title) || IsAnyAuthorMatch(hint, book.Authors);
     private bool IsAnyAuthorMatch(string hint, IEnumerable<Author> authors) =>
@@ -191,7 +191,5 @@ public class AvoidDeepNesting
     private bool IsMatch(string hint, string value) =>
     value.Contains(hint, StringComparison.OrdinalIgnoreCase);
 }
-
-
 public record Author(string FirstName, string LastName);
 public record Book(string Title, ImmutableList<Author> Authors);
