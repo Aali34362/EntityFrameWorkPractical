@@ -36,14 +36,15 @@ string Printable(NameType name) =>
     name.Match((first, last) => $"{last},{first[..2]}",mononym => $"{mononym}");
 
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 using var sqlitecontext = new FootballLeagueDBContext();
 
 
 //////////////////Insert
-await InsertTeams();
+//await InsertTeams();
+await UpdateTeam();
 
 
 ////////////////////Get////////////////////
@@ -60,6 +61,16 @@ await InsertTeams();
 
 
 ///////////////////////INSERT////////////////////////
+///
+
+async Task UpdateTeam()
+{
+    Guid coachId = Guid.Parse("8B0E7FE2-7F68-4544-BCBB-C5F0F99294CE");
+    var coach = await sqlitecontext.coaches.FindAsync(coachId);
+    coach.Name = "ABCDEF";
+    coach.Lst_Crtd_Date = DateTime.Now;
+    await sqlitecontext.SaveChangesAsync();
+}
 async Task InsertTeams()
 {
     //Inserting Data
@@ -71,12 +82,49 @@ async Task InsertTeams()
     {
         Name = "XYZ"
     };
-    await sqlitecontext.coaches.AddAsync(newCoach);
-    await sqlitecontext.SaveChangesAsync();
+    //await sqlitecontext.coaches.AddAsync(newCoach);
+    //await sqlitecontext.SaveChangesAsync();
+    
     //Loop Insert
-
+    var newCoach1 = new Coach
+    {
+        Name = "XYZAD"
+    };
+    var newCoach2 = new Coach
+    {
+        Name = "XYZBC",
+        Act_Ind = 0,
+        Del_Ind = 1
+    };
+    
+    List<Coach> coaches = [];    
+    coaches.Add(newCoach1);
+    coaches.Add(newCoach2);
+    
+    foreach(var coach in coaches)
+    {
+        await sqlitecontext.coaches.AddAsync(coach);
+    }
+    Console.WriteLine(sqlitecontext.ChangeTracker.DebugView.LongView);
+    await sqlitecontext.SaveChangesAsync();
+    Console.WriteLine(sqlitecontext.ChangeTracker.DebugView.LongView);
 
     //Batch Insert
+    var newCoach3 = new Coach
+    {
+        Name = "XYZAD"
+    };
+    var newCoach4 = new Coach
+    {
+        Name = "XYZBC",
+        Act_Ind = 0,
+        Del_Ind = 1
+    };
+    List<Coach> coaches1 = [];
+    coaches1.Add(newCoach3);
+    coaches1.Add(newCoach4);
+    await sqlitecontext.coaches.AddRangeAsync(coaches1);
+    await sqlitecontext.SaveChangesAsync();
 
     //Bulk Insert
 }
