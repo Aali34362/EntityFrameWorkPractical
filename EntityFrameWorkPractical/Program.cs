@@ -1,6 +1,43 @@
 ﻿using EntityFrameWorkCore.Data.Context;
 using EntityFrameWorkCore.Domain.DataModel;
 using Microsoft.EntityFrameworkCore;
+using EntityFrameWorkPractical.ZoranHorvatProgrammingCode;
+
+var authors = new[]
+{
+    Name.Create("Erich","Gamma"),
+    Name.Create("Ralph","Johnson"),
+    Name.Create("Kernighan"),
+    Name.Create("Ritchie")
+};
+
+NameType[]? author = Name.CreateMany(
+    Name.Create("Erich","Gamma"),
+    Name.Create("Ralph","Johnson"),
+    Name.Create("Kernighan"),
+    Name.Create("Ritchie")
+);
+var book = author is null ? null : Books.Create("The Missing Book", author);
+var books = author.BindOptional(a=> Books.Create("The Missing Books", a));
+
+book?.Title.DoOptional(Console.WriteLine);
+
+(book?.Authors ?? Array.Empty<NameType>())
+    .Select(Printable)
+    .ForEach(Console.WriteLine);
+
+books?.Title.DoOptional(Console.WriteLine);
+
+(books?.Authors ?? Array.Empty<NameType>())
+    .Select(Printable)
+    .ForEach(Console.WriteLine);
+
+string Printable(NameType name) =>
+    name.Match((first, last) => $"{last},{first[..2]}",mononym => $"{mononym}");
+
+
+
+
 
 using var sqlitecontext = new FootballLeagueDBContext();
 
@@ -38,12 +75,11 @@ async Task InsertTeams()
     await sqlitecontext.SaveChangesAsync();
     //Loop Insert
 
+
     //Batch Insert
 
     //Bulk Insert
 }
-
-
 
 /////////////////////GET///////////////////////////
 async Task GetIQueryable()
