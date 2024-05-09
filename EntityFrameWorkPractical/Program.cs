@@ -37,10 +37,7 @@ string Printable(NameType name) =>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 using var sqlitecontext = new FootballLeagueDBContext();
-
 
 //////////////////Execute Update
 await ExecuteUpdateTeam();
@@ -76,7 +73,9 @@ async Task ExecuteUpdateTeam()
 
     await sqlitecontext.coaches
          .Where(q => q.Name == "XYZ")
-         .ExecuteDeleteAsync();
+         .ExecuteUpdateAsync(set=> set
+         .SetProperty(prop=> prop.Act_Ind,0) 
+         .SetProperty(prop => prop.Del_Ind, 1));
 }
 
 ///////////////////////Execute Delete////////////////////////
