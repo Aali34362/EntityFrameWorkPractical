@@ -42,10 +42,20 @@ string Printable(NameType name) =>
 using var sqlitecontext = new FootballLeagueDBContext();
 
 
+//////////////////Execute Update
+await ExecuteUpdateTeam();
+
+//////////////////Execute Delete
+//await ExecuteDeleteTeam();
+
+//////////////////Delete
+//await DeleteTeam();
+
+//////////////////Update
+//await UpdateTeam();
+
 //////////////////Insert
 //await InsertTeams();
-await UpdateTeam();
-
 
 ////////////////////Get////////////////////
 //await GetTeams();
@@ -57,20 +67,70 @@ await UpdateTeam();
 //await GetIQueryable();
 
 
+///////////////////////Execute Update////////////////////////
+async Task ExecuteUpdateTeam()
+{
+    ////var coach = await sqlitecontext.coaches.Where(q=> q.Name == "XYZ").ToListAsync();
+    ////sqlitecontext.RemoveRange(coach);
+    ////await sqlitecontext.SaveChangesAsync();
 
+    await sqlitecontext.coaches
+         .Where(q => q.Name == "XYZ")
+         .ExecuteDeleteAsync();
+}
 
+///////////////////////Execute Delete////////////////////////
+async Task ExecuteDeleteTeam()
+{
+    ////var coach = await sqlitecontext.coaches.Where(q=> q.Name == "XYZ").ToListAsync();
+    ////sqlitecontext.RemoveRange(coach);
+    ////await sqlitecontext.SaveChangesAsync();
 
-///////////////////////INSERT////////////////////////
-///
+   await sqlitecontext.coaches
+        .Where(q => q.Name == "XYZ")
+        .ExecuteDeleteAsync();
+}
 
+///////////////////////Delete////////////////////////
+async Task DeleteTeam()
+{
+    Guid coachId = Guid.Parse("8B0E7FE2-7F68-4544-BCBB-C5F0F99294CE");
+    var coach = await sqlitecontext.coaches.FindAsync(coachId);
+    sqlitecontext.Remove(coach);
+    await sqlitecontext.SaveChangesAsync();
+
+    Guid coachesId = Guid.Parse("87D2AB0A-115A-4DD2-9B6F-369CEBDA4581");
+    var coaches = await sqlitecontext.coaches
+        .AsNoTracking()
+        .FirstOrDefaultAsync(a => a.Id == coachesId);
+    sqlitecontext.Entry(coaches).State = EntityState.Deleted;
+    await sqlitecontext.SaveChangesAsync();
+
+}
+
+///////////////////////Update////////////////////////
 async Task UpdateTeam()
 {
     Guid coachId = Guid.Parse("8B0E7FE2-7F68-4544-BCBB-C5F0F99294CE");
     var coach = await sqlitecontext.coaches.FindAsync(coachId);
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(coach));
     coach.Name = "ABCDEF";
     coach.Lst_Crtd_Date = DateTime.Now;
     await sqlitecontext.SaveChangesAsync();
+
+    Guid coachesId = Guid.Parse("87D2AB0A-115A-4DD2-9B6F-369CEBDA4581");
+    var coaches = await sqlitecontext.coaches
+        .AsNoTracking()
+        .FirstOrDefaultAsync(a => a.Id == coachesId);
+    Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(coaches));
+    coaches.Name = "XYZ";
+    coaches.Lst_Crtd_Date = DateTime.Now;
+    sqlitecontext.Update(coaches);
+    await sqlitecontext.SaveChangesAsync();
+
 }
+
+///////////////////////INSERT////////////////////////
 async Task InsertTeams()
 {
     //Inserting Data
