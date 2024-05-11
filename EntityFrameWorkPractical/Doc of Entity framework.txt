@@ -329,3 +329,102 @@ None of these three entities will be changed.
 So that behavior is also very important for us to appreciate and know how to maneuver.
 So now that we have an appreciation for tracking changes and saving changes, let us jump into an activity
 where we look at how we can add data to the database.
+
+
+-------------------------------------------------------------------
+
+Database Migration 
+
+  Used to control changes to Database
+        Entity or Database Context Changes :
+
+  Applied Using Update commands :
+
+  Can be rolled back
+
+  Tracked in source control
+
+  Database changes are tracked in the 
+     _EFMigrationsHistory table
+
+   Can be replayed to create a database at any time 
+
+
+So by now we know that it is used to control the changes that are being made to the database, and changes
+
+to the database could be changes to the entity or entities or changes to the database context.
+
+So basically anything that we do to either an entity or the database context, which could be adding
+
+new configurations or even adding new entities or data models, any of those changes will be compared
+
+with the snapshot file that we've seen.
+
+And then if once those differences are finalized by EF core, it will generate a migration containing
+
+actions that need to be taken to carry out the changes.
+
+
+So pretty much these changes are applied to the database using update commands.
+
+Now one of the key features of migrations that makes it so powerful is the fact that they can actually
+
+be rolled back so we know exactly what has changed and we can always undo exactly that change.
+
+And once again, this is very important when we're doing code first database development, and especially
+
+in an agile environment where database changes may need to happen and they need to happen rapidly and
+
+we need to be able to account for them as we go along.
+
+So migrations definitely fills that gap.
+
+Another important thing is that they can be tracked in source control once again, going back to that
+
+whole Agile concept, it is important for us to be able to track rollback to a previous version, see
+
+who made what change and when.
+
+So the ability to have that tracked in source control is very, very, very beneficial to us.
+
+Then we have the fact that database changes are also being tracked in the database itself.
+
+So once we apply a migration to a database or we create a database through migrations or code first
+
+development, we get a table called underscore, underscore, F migrations history.
+
+Now this table shows all of the migrations that have been applied to the database up until that time,
+
+which means that when we roll back, it will always be able to or should always be able to account for
+
+the migrations that are available, plus the history.
+
+And then between those two, it can tell, okay, I'm at this version or I have up until this migration
+
+applied.
+
+So it's a nice way for us to keep track of which migrations are actually applied to the database and
+
+be able to consolidate that in during our development.
+
+And another key benefit to migrations is that they can always be replayed at any time.
+
+So we can have migrations that may be see data, we can have several migrations that create a database,
+
+create the tables, create sample data, make changes along the way.
+
+The point here is that if I need a fresh copy of a database at any point, all I have to do is change
+
+a connection string run update database, and then it will generate a brand new database up to the latest
+
+migration or whichever migration version I requested.
+
+So all of these superpowers combined to give us a seamless development experience.
+
+And if you have been a developer for years working with databases, you know how important it is to
+
+make sure that our database structure is always up to par based on our application needs.
+
+So in this section, once again, we're going to dive into migrations, look at different scenarios,
+
+look at different commands and things that we can do and explore best practices when handling database

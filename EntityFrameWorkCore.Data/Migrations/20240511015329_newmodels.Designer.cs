@@ -3,6 +3,7 @@ using System;
 using EntityFrameWorkCore.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityFrameWorkCore.Data.Migrations
 {
     [DbContext(typeof(FootballLeagueDBContext))]
-    partial class FootballLeagueDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240511015329_newmodels")]
+    partial class newmodels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
@@ -170,23 +173,7 @@ namespace EntityFrameWorkCore.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LeagueId");
-
                     b.ToTable("teams");
-                });
-
-            modelBuilder.Entity("EntityFrameWorkCore.Domain.DataModel.Team", b =>
-                {
-                    b.HasOne("EntityFrameWorkCore.Domain.DataModel.League", null)
-                        .WithMany("Teams")
-                        .HasForeignKey("LeagueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EntityFrameWorkCore.Domain.DataModel.League", b =>
-                {
-                    b.Navigation("Teams");
                 });
 #pragma warning restore 612, 618
         }
