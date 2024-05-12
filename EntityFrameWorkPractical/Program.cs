@@ -38,6 +38,7 @@ string Printable(NameType name) =>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 using var sqlitecontext = new FootballLeagueDBContext();
+//We can run Update Migration Command from this piece of code
 await sqlitecontext.Database.MigrateAsync();
 
 //////////////////Execute Update
