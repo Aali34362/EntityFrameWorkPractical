@@ -38,9 +38,10 @@ string Printable(NameType name) =>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 using var sqlitecontext = new FootballLeagueDBContext();
+await sqlitecontext.Database.MigrateAsync();
 
 //////////////////Execute Update
-await ExecuteUpdateTeam();
+//await ExecuteUpdateTeam();
 
 //////////////////Execute Delete
 //await ExecuteDeleteTeam();

@@ -428,3 +428,14 @@ make sure that our database structure is always up to par based on our applicati
 So in this section, once again, we're going to dive into migrations, look at different scenarios,
 
 look at different commands and things that we can do and explore best practices when handling database
+
+
+------------------------------------------------
+
+EF Bundles
+
+Executable files that can be used to apply migrations 
+Address some shortcomings of PMC and CLI Commands
+Can be run without needing additional tools or runtime
+Can be used as part of a CI/CD deployment 
+Better error handling ensures that database changes succeed or fail together

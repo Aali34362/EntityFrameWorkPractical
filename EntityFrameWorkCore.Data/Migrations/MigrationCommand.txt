@@ -8,3 +8,10 @@ when we add data in FootballLeagueDBContext OnModelCreating()
 Add-Migration SeededTeams -Context FootballLeagueDBContext
 Update-Database -Context FootballLeagueDBContext
 Remove-Migration -Context FootballLeagueDBContext
+
+
+Script-Migration -Context FootballLeagueDBContext
+
+Script-Migration -Context FootballLeagueContext -Idempotent
+
+Get-Migration -Context FootballLeagueDBContext

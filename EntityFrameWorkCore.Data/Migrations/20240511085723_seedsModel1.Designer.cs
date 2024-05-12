@@ -3,6 +3,7 @@ using System;
 using EntityFrameWorkCore.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityFrameWorkCore.Data.Migrations
 {
     [DbContext(typeof(FootballLeagueDBContext))]
-    partial class FootballLeagueDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240511085723_seedsModel1")]
+    partial class seedsModel1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
@@ -45,9 +48,6 @@ namespace EntityFrameWorkCore.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid>("TeamId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -164,7 +164,7 @@ namespace EntityFrameWorkCore.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("TeamMembers")
+                    b.Property<int>("TeamMembers")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("TeamName")
