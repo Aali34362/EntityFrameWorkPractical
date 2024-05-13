@@ -1,4 +1,5 @@
 ﻿using EntityFrameWorkCore.Domain.DataModel;
+using EntityFrameWorkCore.Domain.DataModel.RelationalModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,12 +13,6 @@ internal class TeamConfiguration : IEntityTypeConfiguration<Team>
         
         builder.HasIndex(q => q.TeamName).IsUnique();
 
-        builder.HasOne(q => q.Coach)
-            .WithOne(q => q.Team)
-            .HasForeignKey<Team>(q => q.CoachId)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder.HasMany(q => q.HomeMatches)
             .WithOne(q => q.HomeTeam)
             .HasForeignKey(q => q.HomeTeamId)
@@ -30,6 +25,13 @@ internal class TeamConfiguration : IEntityTypeConfiguration<Team>
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(t => t.TeamAndLeague)
+               .WithOne(lt => lt.Team)
+               .HasForeignKey<TeamAndLeague>(lt => lt.TeamId);
+
+        builder.HasOne(t => t.CoachAndTeam)
+               .WithOne(lt => lt.Team)
+               .HasForeignKey<CoachAndTeam>(lt => lt.CoachId);
 
 
         // Set up the relationship between Team and League

@@ -49,12 +49,14 @@ using var sqlitecontext = new FootballLeagueDBContext();
 
 //////////////////Delete
 //await DeleteTeam();
+//await DeleteCoach();
 
 //////////////////Update
 //await UpdateTeam();
 
 //////////////////Insert
 //await InsertTeams();
+//await InsertLeague();
 
 ////////////////////Get////////////////////
 //await GetTeams();
@@ -107,6 +109,17 @@ async Task DeleteTeam()
     sqlitecontext.Entry(coaches).State = EntityState.Deleted;
     await sqlitecontext.SaveChangesAsync();
 
+}
+
+async Task DeleteCoach()
+{
+    var recordsToDelete = sqlitecontext.coaches.ToList();
+
+    // Delete all records
+    sqlitecontext.coaches.RemoveRange(recordsToDelete);
+
+    // Save changes to the database
+    await sqlitecontext.SaveChangesAsync();
 }
 
 ///////////////////////Update////////////////////////
@@ -188,6 +201,57 @@ async Task InsertTeams()
     await sqlitecontext.SaveChangesAsync();
 
     //Bulk Insert
+}
+
+async Task InsertTeam()
+{
+    List<Team> teams =
+    [
+        new() { TeamName = "Barcelona", TeamType = ""},
+        new() { TeamName = "Inter Milan", TeamType = ""},
+        new() { TeamName = "Brighton & Hove Albion", TeamType = ""},
+        new() { TeamName = "Man United", TeamType = ""},
+        new() { TeamName = "Argentina", TeamType = ""},
+        new() { TeamName = "Liverpool", TeamType = ""},
+        new() { TeamName = "Napoli", TeamType = ""},
+        new() { TeamName = "Real Madrid", TeamType = ""},
+    ];
+    await sqlitecontext.teams.AddRangeAsync(teams);
+    await sqlitecontext.SaveChangesAsync();
+}
+
+async Task InsertCoach()
+{
+    List<Coach> coaches = [
+        new() { Name = "XAVI, Barcelona" },
+        new() { Name = "Simone INZAGHI, Inter Milan" },
+        new() { Name = "Roberto DE ZERBI, Brighton & Hove Albion" },
+        new() { Name = "Erik TEN HAG, Man United" },
+        new() { Name = "Lionel SCALONI, Argentina" },
+        new() { Name = "Jurgen KLOPP, Liverpool"},
+        new() { Name = "Luciano SPALLETTI, Napoli" },
+        new() { Name = "Carlo ANCELOTTI, Real Madrid" },
+        new() { Name = "Pep GUARDIOLA, Man City" },
+    ];
+    await sqlitecontext.coaches.AddRangeAsync(coaches);
+    await sqlitecontext.SaveChangesAsync();
+}
+async Task InsertLeague()
+{
+    List<League> leagues = new List<League>()
+    {
+        new League(){ Name = "LaLiga" },
+        new League(){ Name = "Dixie League" },
+        new League(){ Name = "Indian Super League" },
+        new League(){ Name = "Indian Super League" },
+        new League(){ Name = "Eredivisie" },
+        new League(){ Name = "ASB Premiership" },
+        new League(){ Name = "Ligue 1" },
+        new League(){ Name = "National Football League" },
+    };
+
+    await sqlitecontext.leagues.AddRangeAsync(leagues);
+    await sqlitecontext.SaveChangesAsync();
 }
 
 /////////////////////GET///////////////////////////
