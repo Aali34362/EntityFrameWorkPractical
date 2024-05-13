@@ -203,6 +203,35 @@ async Task InsertTeams()
     //Bulk Insert
 }
 
+/*
+ // Assuming you have access to your DbContext instance called dbContext
+
+// Create teams
+var team1 = new Team { TeamName = "Team 1", TeamMembers = 10, TeamType = "Type A" };
+var team2 = new Team { TeamName = "Team 2", TeamMembers = 8, TeamType = "Type B" };
+
+// Create leagues
+var league1 = new League { Name = "League 1" };
+var league2 = new League { Name = "League 2" };
+
+// Assign teams to leagues
+team1.LeagueTeams = new List<LeagueTeam>
+{
+    new LeagueTeam { Team = team1, League = league1 },
+    new LeagueTeam { Team = team1, League = league2 }
+};
+
+team2.LeagueTeams = new List<LeagueTeam>
+{
+    new LeagueTeam { Team = team2, League = league1 }
+};
+
+// Add entities to DbContext and save changes
+dbContext.Teams.AddRange(team1, team2);
+dbContext.Leagues.AddRange(league1, league2);
+dbContext.SaveChanges();
+ */
+
 async Task InsertTeam()
 {
     List<Team> teams =
