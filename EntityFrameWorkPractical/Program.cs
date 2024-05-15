@@ -49,7 +49,7 @@ using var sqlitecontext = new FootballLeagueDBContext();
 
 //////////////////Delete
 //await DeleteTeam();
-//await DeleteCoach();
+//await DeleteTables();
 
 //////////////////Update
 //await UpdateTeam();
@@ -57,6 +57,8 @@ using var sqlitecontext = new FootballLeagueDBContext();
 //////////////////Insert
 //await InsertTeams();
 //await InsertLeague();
+//await InsertCoach();
+//await InsertTeam();
 
 ////////////////////Get////////////////////
 //await GetTeams();
@@ -111,12 +113,22 @@ async Task DeleteTeam()
 
 }
 
-async Task DeleteCoach()
+async Task DeleteTables()
 {
-    var recordsToDelete = sqlitecontext.coaches.ToList();
+    ////var coachToDelete = sqlitecontext.coaches.ToList();
 
-    // Delete all records
-    sqlitecontext.coaches.RemoveRange(recordsToDelete);
+    ////// Delete all records
+    ////sqlitecontext.coaches.RemoveRange(coachToDelete);
+
+    ////var leagueToDelete = sqlitecontext.leagues.ToList();
+
+    ////// Delete all records
+    ////sqlitecontext.leagues.RemoveRange(leagueToDelete);
+
+    ////var teamsToDelete = sqlitecontext.teams.ToList();
+
+    ////// Delete all records
+    ////sqlitecontext.teams.RemoveRange(teamsToDelete);
 
     // Save changes to the database
     await sqlitecontext.SaveChangesAsync();
@@ -236,14 +248,24 @@ async Task InsertTeam()
 {
     List<Team> teams =
     [
-        new() { TeamName = "Barcelona", TeamType = ""},
-        new() { TeamName = "Inter Milan", TeamType = ""},
-        new() { TeamName = "Brighton & Hove Albion", TeamType = ""},
-        new() { TeamName = "Man United", TeamType = ""},
-        new() { TeamName = "Argentina", TeamType = ""},
-        new() { TeamName = "Liverpool", TeamType = ""},
-        new() { TeamName = "Napoli", TeamType = ""},
-        new() { TeamName = "Real Madrid", TeamType = ""},
+        new() { TeamName = "Barcelona", TeamType = "Away Team", TeamMembers = 15,
+            CoachId= Guid.Parse("CBC4B16C-F7F1-405D-B9D2-86A96EB87A8F"), LeagueId= Guid.Parse("027C4CFC-9985-4177-A586-50F12DC15F2E")},
+        new() { TeamName = "Inter Milan", TeamType = "Home Team", TeamMembers = 11,
+            CoachId= Guid.Parse("48FD09D6-3308-4014-9750-F1520FAA3F1C"), LeagueId= Guid.Parse("1578DAFB-A841-456D-B56D-54B91212AA8A")},
+        new() { TeamName = "Brighton & Hove Albion", TeamType = "Away Team", TeamMembers = 15,
+            CoachId= Guid.Parse("942DF259-2E32-45CA-A754-B5F9CDCD2CC4"), LeagueId= Guid.Parse("EA19350F-04A8-4CFD-812E-9294EF063896")},
+        new() { TeamName = "Man United", TeamType = "Home Team", TeamMembers = 20,
+            CoachId= Guid.Parse("F2DABB6F-128E-4D55-91AB-37DAE576AADC"), LeagueId= Guid.Parse("F085EC76-689F-4070-B79D-E86231FA7776")},
+        new() { TeamName = "Argentina", TeamType = "Away Team",  TeamMembers = 35,
+            CoachId= Guid.Parse("15B88162-E240-4358-8FAD-10D89AB4640C"), LeagueId= Guid.Parse("A7A1EF70-D26E-4FC9-96E4-E3A9F2C6064C")},
+        new() { TeamName = "Liverpool", TeamType = "Home Team",  TeamMembers = 15,
+            CoachId= Guid.Parse("A351FA1A-121C-402E-88EA-9CDE21C8D6B0"), LeagueId= Guid.Parse("F085EC76-689F-4070-B79D-E86231FA7776")},
+        new() { TeamName = "Napoli", TeamType = "Away Team",  TeamMembers = 14,
+            CoachId= Guid.Parse("ADB69D93-AEA3-491D-ABA6-726A3158A9B2"), LeagueId= Guid.Parse("2DF9E69C-0CFD-4E34-8B8F-DF97E20543CA")},
+        new() { TeamName = "Real Madrid", TeamType = "Home Team",  TeamMembers = 17,
+            CoachId= Guid.Parse("1CB9C61B-43A0-43C9-A12D-0A9BA6678512"), LeagueId= Guid.Parse("1BE1D564-86A0-40E9-A5EF-5A86CE664021")},
+        new() { TeamName = "Man City", TeamType = "Home Team",  TeamMembers = 16,
+            CoachId= Guid.Parse("9A4FAC42-4EAD-4932-BEC4-AED174716583"), LeagueId= Guid.Parse("2DF9E69C-0CFD-4E34-8B8F-DF97E20543CA")},
     ];
     await sqlitecontext.teams.AddRangeAsync(teams);
     await sqlitecontext.SaveChangesAsync();
@@ -269,19 +291,47 @@ async Task InsertLeague()
 {
     List<League> leagues = new List<League>()
     {
-        new League(){ Name = "LaLiga" },
-        new League(){ Name = "Dixie League" },
-        new League(){ Name = "Indian Super League" },
-        new League(){ Name = "Indian Super League" },
-        new League(){ Name = "Eredivisie" },
-        new League(){ Name = "ASB Premiership" },
-        new League(){ Name = "Ligue 1" },
-        new League(){ Name = "National Football League" },
+        new League(){ Name = "EFL League" },
+        new League(){ Name = "UEFA Champions League" },
+        new League(){ Name = "Premier League" },
+        new League(){ Name = "FIFA" },
+        new League(){ Name = "English League Championship" },
+        new League(){ Name = "German Bundesliga" },
+        new League(){ Name = "French Ligue 1" },
+        new League(){ Name = "Mexican Liga BBVA MX" },
+        new League(){ Name = "Men's Olympic Tournament" },
+        new League(){ Name = "Copa América" },
     };
 
     await sqlitecontext.leagues.AddRangeAsync(leagues);
     await sqlitecontext.SaveChangesAsync();
 }
+
+#region Related Data
+//Insert Record with FK
+async Task InsertRelationalData()
+{
+    var match = new Match
+    {
+        AwayTeamId = Guid.NewGuid(),
+        HomeTeamId = Guid.NewGuid(),
+        HomeTeamScore = 1,
+        AwayTeamScore = 2,
+        Match_Date = DateTime.Now,
+        TicketPrice = 500
+    };
+    await sqlitecontext.AddAsync(match);
+    await sqlitecontext.SaveChangesAsync();
+}
+
+
+//Insert Parent/Child
+
+
+//Insert Parent with Children
+
+
+#endregion
 
 /////////////////////GET///////////////////////////
 async Task GetIQueryable()
