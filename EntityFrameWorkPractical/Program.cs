@@ -3,6 +3,7 @@ using EntityFrameWorkCore.Domain.DataModel;
 using Microsoft.EntityFrameworkCore;
 using EntityFrameWorkPractical.ZoranHorvatProgrammingCode;
 
+#region Zoran
 var authors = new[]
 {
     Name.Create("Erich","Gamma"),
@@ -34,37 +35,41 @@ books?.Title.DoOptional(Console.WriteLine);
 
 string Printable(NameType name) =>
     name.Match((first, last) => $"{last},{first[..2]}", mononym => $"{mononym}");
-
+#endregion
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 using var sqlitecontext = new FootballLeagueDBContext();
 //We can run Update Migration Command from this piece of code
 ////await sqlitecontext.Database.MigrateAsync();
 
-//////////////////Execute Update
-//await ExecuteUpdateTeam();
-
-//////////////////Execute Delete
-//await ExecuteDeleteTeam();
 
 //////////////////Delete
+#region Delete
 //await DeleteTeam();
 //await DeleteTables();
-
+//await ExecuteDeleteTeam();
+#endregion
 //////////////////Update
+#region Update
+//await UpdateNoTracking();
 //await UpdateTeam();
-
+//await ExecuteUpdateTeam();
+#endregion
 //////////////////Insert
-await InsertMatch();
-await InsertMoreMatches();
+#region Insert
+//await InsertMatch();
+//await InsertMoreMatches();
 //await InsertTeams();
 //await InsertLeague();
 //await InsertCoach();
 //await InsertTeam();
 //await InsertParentChild();
 //await InsertParentwithChild();
-
+#endregion
 ////////////////////Get////////////////////
+#region Get
+//await AnonymousTypesAndRelatedData();
+//await FilteringIncludes();
 //await GetLazyLoading();
 //await GetExplicityLoading();
 //await GetEagerloading();
@@ -75,35 +80,10 @@ await InsertMoreMatches();
 //await GetProjections();
 //await GetNoTrackingandTracking();
 //await GetIQueryable();
-
-
-///////////////////////Execute Update////////////////////////
-async Task ExecuteUpdateTeam()
-{
-    ////var coach = await sqlitecontext.coaches.Where(q=> q.Name == "XYZ").ToListAsync();
-    ////sqlitecontext.RemoveRange(coach);
-    ////await sqlitecontext.SaveChangesAsync();
-
-    await sqlitecontext.coaches
-         .Where(q => q.Name == "XYZ")
-         .ExecuteUpdateAsync(set => set
-         .SetProperty(prop => prop.Act_Ind, 0)
-         .SetProperty(prop => prop.Del_Ind, 1));
-}
-
-///////////////////////Execute Delete////////////////////////
-async Task ExecuteDeleteTeam()
-{
-    ////var coach = await sqlitecontext.coaches.Where(q=> q.Name == "XYZ").ToListAsync();
-    ////sqlitecontext.RemoveRange(coach);
-    ////await sqlitecontext.SaveChangesAsync();
-
-    await sqlitecontext.coaches
-         .Where(q => q.Name == "XYZ")
-         .ExecuteDeleteAsync();
-}
+#endregion
 
 ///////////////////////Delete////////////////////////
+#region Delete
 async Task DeleteTeam()
 {
     Guid coachId = Guid.Parse("8B0E7FE2-7F68-4544-BCBB-C5F0F99294CE");
@@ -139,8 +119,20 @@ async Task DeleteTables()
     // Save changes to the database
     await sqlitecontext.SaveChangesAsync();
 }
+///////////////////////Execute Delete////////////////////////
+async Task ExecuteDeleteTeam()
+{
+    ////var coach = await sqlitecontext.coaches.Where(q=> q.Name == "XYZ").ToListAsync();
+    ////sqlitecontext.RemoveRange(coach);
+    ////await sqlitecontext.SaveChangesAsync();
 
+    await sqlitecontext.coaches
+         .Where(q => q.Name == "XYZ")
+         .ExecuteDeleteAsync();
+}
+#endregion
 ///////////////////////Update////////////////////////
+#region Update
 async Task UpdateTeam()
 {
     Guid coachId = Guid.Parse("8B0E7FE2-7F68-4544-BCBB-C5F0F99294CE");
@@ -173,8 +165,23 @@ async Task UpdateNoTracking()
     sqlitecontext.Entry(coach1).State = EntityState.Modified;
     await sqlitecontext.SaveChangesAsync();
 }
+///////////////////////Execute Update////////////////////////
+async Task ExecuteUpdateTeam()
+{
+    ////var coach = await sqlitecontext.coaches.Where(q=> q.Name == "XYZ").ToListAsync();
+    ////sqlitecontext.RemoveRange(coach);
+    ////await sqlitecontext.SaveChangesAsync();
 
+    await sqlitecontext.coaches
+         .Where(q => q.Name == "XYZ")
+         .ExecuteUpdateAsync(set => set
+         .SetProperty(prop => prop.Act_Ind, 0)
+         .SetProperty(prop => prop.Del_Ind, 1));
+}
+
+#endregion
 ///////////////////////INSERT////////////////////////
+#region Insert
 async Task InsertTeams()
 {
     //Inserting Data
@@ -484,8 +491,40 @@ async Task InsertParentwithChild()
 }
 #endregion
 
+#endregion
 /////////////////////GET///////////////////////////
+#region Get
+async Task AnonymousTypesAndRelatedData()
+{
+    var teams = await sqlitecontext.teams
+        .Select(q=> new TeamDetails {
+            TeamId = q.Id,
+            TeamName = q.TeamName,
+            CoachName = q.Coach.Name,
+            TotalAwayGoals = q.AwayMatches.Sum(x=>x.AwayTeamScore),
+            TotalHomeGoals = q.AwayMatches.Sum(x=>x.HomeTeamScore),
 
+        })
+        .ToListAsync();
+
+    Console.WriteLine(string.Join(", ", teams.Select(t => $"{t.TeamName} - {t.CoachName} - {t.TotalHomeGoals} - {t.TotalAwayGoals}").ToArray()));
+}
+async Task FilteringIncludes()
+{
+    var teams = await sqlitecontext.teams
+        .Include("Coach")
+        .Include(q => q.HomeMatches
+                 .Where(q=>q.HomeTeamScore > 0))
+        .ToListAsync();
+    foreach (var team in teams)
+    {
+        Console.WriteLine($"{team.TeamName} - {team.Coach.Name}");
+        if (team.HomeMatches.Count > 0)
+            Console.WriteLine(string.Join(", ", team.HomeMatches
+                .Select(x => $"Score - {x.HomeTeamScore}")));
+    }
+
+}
 //Lazy Loading
 async Task GetLazyLoading()
 {
@@ -784,9 +823,9 @@ async Task GetFilteredTeams()
         Console.WriteLine(team.TeamName);
     }
 }
-
-
+#endregion
 //////////////////////////////////////////////////////////////////////////////////////////
+#region TP
 var yourClass = new YourClass();
 //await yourClass.GetAllTeams();
 
@@ -848,9 +887,22 @@ public class YourClass
         }
     }
 }
+#endregion
 //////////////////////////////////////////////////////////////////////////////////////////
+#region TP Class
 public class TeamInfo
 {
     public Guid TeamId { get; set; }
     public string? TeamName { get; set; }
 }
+
+public class TeamDetails
+{
+    public Guid TeamId { get; set; }
+    public string TeamName { get; set; }
+    public string CoachName { get; set; }
+
+    public int TotalHomeGoals { get; set; }
+    public int TotalAwayGoals { get; set; }
+}
+#endregion
