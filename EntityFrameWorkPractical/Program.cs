@@ -12,13 +12,13 @@ var authors = new[]
 };
 
 NameType[]? author = Name.CreateMany(
-    Name.Create("Erich","Gamma"),
-    Name.Create("Ralph","Johnson"),
+    Name.Create("Erich", "Gamma"),
+    Name.Create("Ralph", "Johnson"),
     Name.Create("Kernighan"),
     Name.Create("Ritchie")
 );
 var book = author is null ? null : Books.Create("The Missing Book", author);
-var books = author.BindOptional(a=> Books.Create("The Missing Books", a));
+var books = author.BindOptional(a => Books.Create("The Missing Books", a));
 
 book?.Title.DoOptional(Console.WriteLine);
 
@@ -33,7 +33,7 @@ books?.Title.DoOptional(Console.WriteLine);
     .ForEach(Console.WriteLine);
 
 string Printable(NameType name) =>
-    name.Match((first, last) => $"{last},{first[..2]}",mononym => $"{mononym}");
+    name.Match((first, last) => $"{last},{first[..2]}", mononym => $"{mononym}");
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,12 +55,19 @@ using var sqlitecontext = new FootballLeagueDBContext();
 //await UpdateTeam();
 
 //////////////////Insert
+await InsertMatch();
+await InsertMoreMatches();
 //await InsertTeams();
 //await InsertLeague();
 //await InsertCoach();
 //await InsertTeam();
+//await InsertParentChild();
+//await InsertParentwithChild();
 
 ////////////////////Get////////////////////
+//await GetLazyLoading();
+//await GetExplicityLoading();
+//await GetEagerloading();
 //await GetTeams();
 //await GetFilteredTeams();
 //await GetAllTeamsQuerySyntax();
@@ -79,8 +86,8 @@ async Task ExecuteUpdateTeam()
 
     await sqlitecontext.coaches
          .Where(q => q.Name == "XYZ")
-         .ExecuteUpdateAsync(set=> set
-         .SetProperty(prop=> prop.Act_Ind,0) 
+         .ExecuteUpdateAsync(set => set
+         .SetProperty(prop => prop.Act_Ind, 0)
          .SetProperty(prop => prop.Del_Ind, 1));
 }
 
@@ -91,9 +98,9 @@ async Task ExecuteDeleteTeam()
     ////sqlitecontext.RemoveRange(coach);
     ////await sqlitecontext.SaveChangesAsync();
 
-   await sqlitecontext.coaches
-        .Where(q => q.Name == "XYZ")
-        .ExecuteDeleteAsync();
+    await sqlitecontext.coaches
+         .Where(q => q.Name == "XYZ")
+         .ExecuteDeleteAsync();
 }
 
 ///////////////////////Delete////////////////////////
@@ -112,7 +119,6 @@ async Task DeleteTeam()
     await sqlitecontext.SaveChangesAsync();
 
 }
-
 async Task DeleteTables()
 {
     ////var coachToDelete = sqlitecontext.coaches.ToList();
@@ -153,7 +159,19 @@ async Task UpdateTeam()
     coaches.Lst_Crtd_Date = DateTime.Now;
     sqlitecontext.Update(coaches);
     await sqlitecontext.SaveChangesAsync();
+}
+async Task UpdateNoTracking()
+{
+    // We cannot use find with no tracking enabled, so we look for the FirstOrDefault()
+    var coach1 = await sqlitecontext.coaches
+        .AsNoTracking()
+        .FirstOrDefaultAsync(q => q.Id == Guid.Parse(""));
+    coach1.Name = "Testing No Tracking Behavior - Entity State Modified";
 
+    // We can either call the Update() method or change the Entity State manually
+    //context.Update(coach1);
+    sqlitecontext.Entry(coach1).State = EntityState.Modified;
+    await sqlitecontext.SaveChangesAsync();
 }
 
 ///////////////////////INSERT////////////////////////
@@ -170,7 +188,7 @@ async Task InsertTeams()
     };
     //await sqlitecontext.coaches.AddAsync(newCoach);
     //await sqlitecontext.SaveChangesAsync();
-    
+
     //Loop Insert
     var newCoach1 = new Coach
     {
@@ -182,12 +200,12 @@ async Task InsertTeams()
         Act_Ind = 0,
         Del_Ind = 1
     };
-    
-    List<Coach> coaches = [];    
+
+    List<Coach> coaches = [];
     coaches.Add(newCoach1);
     coaches.Add(newCoach2);
-    
-    foreach(var coach in coaches)
+
+    foreach (var coach in coaches)
     {
         await sqlitecontext.coaches.AddAsync(coach);
     }
@@ -270,7 +288,6 @@ async Task InsertTeam()
     await sqlitecontext.teams.AddRangeAsync(teams);
     await sqlitecontext.SaveChangesAsync();
 }
-
 async Task InsertCoach()
 {
     List<Coach> coaches = [
@@ -306,6 +323,76 @@ async Task InsertLeague()
     await sqlitecontext.leagues.AddRangeAsync(leagues);
     await sqlitecontext.SaveChangesAsync();
 }
+async Task InsertMatch()
+{
+    var match = new Match
+    {
+        AwayTeamId = Guid.Parse("34D27B09-D2C0-49B9-A1C0-2098EAC6DB13"),
+        HomeTeamId = Guid.Parse("623F665E-9768-49DF-8635-C4CE26E657AA"),
+        HomeTeamScore = 0,
+        AwayTeamScore = 0,
+        Match_Date = new DateTime(2023, 10, 1),
+        TicketPrice = 20,
+    };
+
+    await sqlitecontext.AddAsync(match);
+    await sqlitecontext.SaveChangesAsync();
+
+    /* Incorrect reference data  - Will give error*/
+    var match1 = new Match
+    {
+        AwayTeamId = Guid.Parse("35786C24-7D1C-4643-A648-1BE00C1A57D8"),
+        HomeTeamId = Guid.Parse("6F2DB6B2-9EC0-4398-932D-81EAEBC485E4"),
+        HomeTeamScore = 0,
+        AwayTeamScore = 0,
+        Match_Date = new DateTime(2023, 10, 1),
+        TicketPrice = 20,
+    };
+
+    await sqlitecontext.AddAsync(match1);
+    await sqlitecontext.SaveChangesAsync();
+}
+async Task InsertMoreMatches()
+{
+    var match1 = new Match
+    {
+        AwayTeamId = Guid.Parse("ABCD69E3-212D-46C8-973D-33778C476375"),
+        HomeTeamId = Guid.Parse("73AD499F-3571-4882-9C64-00262C155DC7"),
+        HomeTeamScore = 1,
+        AwayTeamScore = 0,
+        Match_Date = new DateTime(2023, 01, 1),
+        TicketPrice = 20,
+    };
+    var match2 = new Match
+    {
+        AwayTeamId = Guid.Parse("D7453B2C-031E-4302-9A3D-7E0CC09E0427"),
+        HomeTeamId = Guid.Parse("D2CBEC29-26F7-460D-B0D4-A5010FCCCC27"),
+        HomeTeamScore = 1,
+        AwayTeamScore = 0,
+        Match_Date = new DateTime(2023, 01, 1),
+        TicketPrice = 20,
+    };
+    var match3 = new Match
+    {
+        AwayTeamId = Guid.Parse("A44F81EC-1571-4226-AAC9-8891E88BE56C"),
+        HomeTeamId = Guid.Parse("4113E2FF-381E-49FF-A8EC-9E21EAA1C41B"),
+        HomeTeamScore = 1,
+        AwayTeamScore = 0,
+        Match_Date = new DateTime(2023, 01, 1),
+        TicketPrice = 20,
+    };
+    var match4 = new Match
+    {
+        AwayTeamId = Guid.Parse("5BB8C33B-0727-43EC-BD2D-7B7220134FB8"),
+        HomeTeamId = Guid.Parse("BAF65EA0-801F-42DF-9D78-B28C62F4B12F"),
+        HomeTeamScore = 0,
+        AwayTeamScore = 1,
+        Match_Date = new DateTime(2023, 01, 1),
+        TicketPrice = 20,
+    };
+    await sqlitecontext.AddRangeAsync(match1, match2, match3, match4);
+    await sqlitecontext.SaveChangesAsync();
+}
 
 #region Related Data
 //Insert Record with FK
@@ -323,17 +410,127 @@ async Task InsertRelationalData()
     await sqlitecontext.AddAsync(match);
     await sqlitecontext.SaveChangesAsync();
 }
-
-
 //Insert Parent/Child
-
-
+async Task InsertParentChild()
+{
+    var team = new Team
+    {
+        TeamName = "XYZ",
+        TeamType = "Away Team",
+        TeamMembers = 18,
+        Coach = new Coach
+        {
+            Name = "XYZ"
+        },
+        League = new League
+        {
+            Name = "XYZ"
+        }
+    };
+    await sqlitecontext.teams.AddAsync(team);
+    await sqlitecontext.SaveChangesAsync();
+}
 //Insert Parent with Children
+async Task InsertParentwithChild()
+{
+    var league = new League
+    {
+        Teams = new List<Team>
+        {
+            new() {
+                TeamName = "ABC",
+                TeamType = "Home Team",
+                TeamMembers = 12,
+                Coach = new Coach
+                {
+                    Name = "ABC"
+                }
+            },
+            new() {
+                TeamName = "LMNO",
+                TeamType = "Away Team",
+                TeamMembers = 14,
+                Coach = new Coach
+                {
+                    Name = "LMNO"
+                }
+            }
+        }
+    };
 
+    ////var teamsToAdd = new List<Team>();
+    ////foreach (var team in league.Teams)
+    ////{
+    ////    // Check if the team already exists
+    ////    var existingTeam = await sqlitecontext.teams
+    ////        .Include(t => t.Coach)
+    ////        .FirstOrDefaultAsync(t => t.TeamName == team.TeamName);
 
+    ////    if (existingTeam != null)
+    ////    {
+    ////        // If the team exists, attach it to the new league
+    ////        league.Teams.Remove(team);
+    ////        league.Teams.Add(existingTeam);
+    ////    }
+    ////    else
+    ////    {
+    ////        // If the team doesn't exist, prepare it for addition
+    ////        teamsToAdd.Add(team);
+    ////    }
+    ////}
+
+    await sqlitecontext.leagues.AddRangeAsync(league);
+    await sqlitecontext.SaveChangesAsync();
+}
 #endregion
 
 /////////////////////GET///////////////////////////
+
+//Lazy Loading
+async Task GetLazyLoading()
+{
+    Console.WriteLine("GetLazyLoading");
+    var league = await sqlitecontext.FindAsync<League>(Guid.Parse("2DF9E69C-0CFD-4E34-8B8F-DF97E20543CA"));
+    Console.WriteLine(league.Name);
+    if (league.Teams.Any())
+        Console.WriteLine(string.Join(", ", league.Teams.Select(x => $"{x.TeamName}")));
+
+    foreach(var leagues in await sqlitecontext.leagues.ToListAsync())
+    {
+        Console.WriteLine(leagues.Name);
+        if (league.Teams.Any())
+            Console.WriteLine(string.Join(", ", leagues.Teams.Select(x => $"{x.TeamName} - {x.Coach.Name}")));
+    }
+
+}
+//Explicit Loading
+async Task GetExplicityLoading()
+{
+    Console.WriteLine("GetExplicityLoading");
+    var league = await sqlitecontext.FindAsync<League>(Guid.Parse("2DF9E69C-0CFD-4E34-8B8F-DF97E20543CA"));
+    //Loading Teams
+    sqlitecontext.Entry(league).Collection(q => q.Teams).Load();
+    Console.WriteLine(league.Name);
+    if (league.Teams.Any())
+        Console.WriteLine(string.Join(", ", league.Teams.Select(x => $"{x.TeamName}")));
+
+}
+//Eager Loading
+async Task GetEagerloading()
+{
+    Console.WriteLine("GetEagerloading");
+    var leagues = await sqlitecontext.leagues
+        //.Include("Teams") 
+        .Include(q => q.Teams)//Loading Teams
+        .ThenInclude(q => q.Coach)//Loading Coach
+        .ToListAsync();
+    foreach (var league in leagues)
+    {
+        Console.WriteLine(league.Name);
+        if (league.Teams.Count > 0)
+            Console.WriteLine(string.Join(", ", league.Teams.Select(x => $"{x.TeamName} - {x.Coach.Name}")));
+    }
+}
 async Task GetIQueryable()
 {
     //IQueryables vs List Types
@@ -343,19 +540,19 @@ async Task GetIQueryable()
 
     //after executing ToListAsync, the records are loaded into memory. Any operation is then done in memory
     teamsAsList = await sqlitecontext.teams.ToListAsync();
-    if(option == 1)
+    if (option == 1)
     {
         teamsAsList = teamsAsList
-            .Where(q => q.TeamMembers == 10 )
+            .Where(q => q.TeamMembers == 10)
             .ToList();
     }
-    else if(option == 2)
+    else if (option == 2)
     {
         teamsAsList = teamsAsList
             .Where(q => q.TeamName.Contains("q"))
             .ToList();
     }
-    foreach(var t in teamsAsList) { Console.WriteLine(t.TeamName); }
+    foreach (var t in teamsAsList) { Console.WriteLine(t.TeamName); }
 
     //Records stay as IQueryable until the ToListAsync is executed, then the final query is performed.
     var teamsAsQuerable = sqlitecontext.teams.AsQueryable();
@@ -370,7 +567,7 @@ async Task GetIQueryable()
             .Where(q => q.TeamName.Contains("q"));
     }
     foreach (var t in teamsAsList) { Console.WriteLine(t.TeamName); }
-    
+
     // in list we called all the data and then filtered out the data
     // in asqueryable() we seek the condition where ever its declared and then bring exact data related to condition of filter.
 
@@ -392,7 +589,7 @@ async Task GetProjections()
         .teams
         .Select(a => a.TeamName)
         .ToListAsync();
-    foreach(var names in teamNames) { Console.WriteLine(names); }
+    foreach (var names in teamNames) { Console.WriteLine(names); }
 
     //Projection
     var teamProjection = await sqlitecontext
@@ -404,13 +601,13 @@ async Task GetProjections()
     var teamProjections = await sqlitecontext
             .teams
             .Select(a => new TeamInfo
-            { 
-                TeamName = a.TeamName, 
+            {
+                TeamName = a.TeamName,
                 TeamId = a.Id
-             })
+            })
             .ToListAsync();
-    foreach (var teams in teamProjections) 
-    { 
+    foreach (var teams in teamProjections)
+    {
         Console.WriteLine($"{teams.TeamId} {teams.TeamName}");
     }
 
@@ -439,10 +636,10 @@ async Task GetAggregateMethods()
         .GroupBy(x => x.Crtd_Date.Date)
         //.Where() // Translates to a Having clause
         ;
-    foreach(var group in groupTeams)
+    foreach (var group in groupTeams)
     {
         Console.WriteLine(group.Key);
-        foreach(var team in group)
+        foreach (var team in group)
         {
             Console.WriteLine(team.TeamName);
         }
@@ -479,7 +676,7 @@ async Task GetAggregateMethods()
     var page = 0;
     var next = true;
 
-    while(next)
+    while (next)
     {
         var teams = await sqlitecontext
             .teams
@@ -487,7 +684,7 @@ async Task GetAggregateMethods()
             .Take(recordCount)
             .ToListAsync();
 
-        foreach(var team in teams)
+        foreach (var team in teams)
         {
             Console.WriteLine(team.TeamName);
         }
@@ -526,7 +723,7 @@ async Task GetTeams()
 async Task GetAllTeamsQuerySyntax()
 {
     var teams = from team in sqlitecontext.teams select team;
-    foreach(var t in teams){ Console.WriteLine(t.TeamName); }
+    foreach (var t in teams) { Console.WriteLine(t.TeamName); }
 
 
     var methodlistteams = await (from team in sqlitecontext.teams select team).ToListAsync();
@@ -535,8 +732,8 @@ async Task GetAllTeamsQuerySyntax()
     Console.WriteLine("Enter Desired Team");
     var desiredTeam = Console.ReadLine();
     var methodlistteams1 = await (from team in sqlitecontext.teams
-                                 where EF.Functions.Like(team.TeamName, $"%{desiredTeam}%")
-                                 select team
+                                  where EF.Functions.Like(team.TeamName, $"%{desiredTeam}%")
+                                  select team
                                  ).ToListAsync();
     foreach (var t in methodlistteams1) { Console.WriteLine(t.TeamName); }
 }
@@ -569,7 +766,7 @@ async Task GetFilteredTeams()
     var searchTeam2 = Console.ReadLine();
     var partialMatches2 = await sqlitecontext
         .teams
-        .Where( x=> EF.Functions.Like(x.TeamName, searchTeam2) )
+        .Where(x => EF.Functions.Like(x.TeamName, searchTeam2))
         .ToListAsync();
     foreach (var team in partialMatches2)
     {
@@ -587,6 +784,7 @@ async Task GetFilteredTeams()
         Console.WriteLine(team.TeamName);
     }
 }
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 var yourClass = new YourClass();
@@ -639,7 +837,7 @@ public class YourClass
             Guid id = Guid.Parse(Id);
             var team = await _context
                 .teams
-                .FirstOrDefaultAsync( x=> (x.Id == id));
+                .FirstOrDefaultAsync(x => (x.Id == id));
             return team;
         }
         catch (Exception ex)

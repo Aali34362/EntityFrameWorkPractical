@@ -439,3 +439,169 @@ Address some shortcomings of PMC and CLI Commands
 Can be run without needing additional tools or runtime
 Can be used as part of a CI/CD deployment 
 Better error handling ensures that database changes succeed or fail together
+
+
+----------------------------------------
+
+Loading Related Data
+
+There are three common EF core patterns used to load related data.
+-> Eage loading : related data is loaded from the database as part of the initial query
+    use the include() method to load related data in a query
+    Eager loading of collection navigation may cause performance issues.
+      Use AsSplitQuery() as needed.
+    Inclued() allows Where() methods for filtering
+        If tracking is enabled, then the filter might return tracked records, which might be incorrect data
+    Use ThenInclude() to get more dependencies.
+
+-> Explicit loading : related database is explicitly loaded from the database later.
+    Explicitly load a navigation property with the DbContext.Entry(..)Api
+    Data can be explicitly loaded by executing a separate query that returns the related entities
+    If change tracking is enabled, EF core will set the navigation properties od the newly-loaded entity to refer to any entities already loaded.
+
+-> Lazy loading : related data is loaded from the database accessing the navigation property.
+
+
+
+
+In Entity Framework (EF), eager loading, explicit loading, and lazy loading are techniques for loading related entities from the database. These techniques help optimize performance and manage relationships between entities effectively. Let's explore each of them:
+
+1. Eager Loading:
+Eager loading is a technique where related entities are loaded from the database along with the main entity. It means that when you retrieve an entity, EF automatically loads its related entities as well.
+
+Example:
+
+Suppose you have an Order entity with a navigation property OrderLines representing the order lines associated with it. With eager loading, you can include the OrderLines when querying the Order entity:
+
+csharp
+Copy code
+var order = context.Orders
+    .Include(o => o.OrderLines)
+    .FirstOrDefault();
+In this example, .Include(o => o.OrderLines) specifies that the OrderLines associated with each Order should be loaded eagerly.
+
+2. Explicit Loading:
+Explicit loading is a technique where related entities are loaded from the database explicitly when needed. It allows you to control when related entities are loaded, which can be useful in scenarios where you want to minimize the amount of data loaded upfront.
+
+Example:
+
+Using the same Order entity example, you can explicitly load the OrderLines associated with an Order after retrieving the Order entity:
+
+csharp
+Copy code
+var order = context.Orders.FirstOrDefault();
+
+if (order != null)
+{
+    // Explicitly load OrderLines
+    context.Entry(order)
+        .Collection(o => o.OrderLines)
+        .Load();
+}
+In this example, .Load() is used to explicitly load the OrderLines associated with the Order.
+
+3. Lazy Loading:
+Lazy loading is a technique where related entities are loaded from the database automatically when accessed for the first time. It defers the loading of related entities until they are actually needed, which can help improve performance by reducing the amount of data loaded upfront.
+
+Example:
+
+To enable lazy loading in EF Core, you need to mark navigation properties as virtual:
+
+csharp
+Copy code
+public class Order
+{
+    public int OrderId { get; set; }
+    public string OrderNumber { get; set; }
+    
+    public virtual ICollection<OrderLine> OrderLines { get; set; }
+}
+With lazy loading enabled, you can access related entities as usual without explicitly loading them:
+
+csharp
+Copy code
+var order = context.Orders.FirstOrDefault();
+
+// Access OrderLines (they will be loaded automatically)
+var orderLines = order.OrderLines;
+In this example, order.OrderLines is accessed directly without explicit loading, and EF Core will load the related OrderLines lazily.
+
+Conclusion:
+Eager loading, explicit loading, and lazy loading are techniques for loading related entities in Entity Framework, each offering its own advantages and trade-offs. Choosing the appropriate loading strategy depends on factors such as performance requirements, data access patterns, and the size of the dataset.
+
+
+------------------------------------------------------
+
+
+In Entity Framework (EF), tracking refers to the mechanism by which EF keeps track of changes made to entities loaded from the database. It enables EF to detect changes made to entity properties and automatically generate the appropriate SQL statements to persist those changes back to the database when SaveChanges() is called.
+
+Tracking Modes:
+No Tracking: Entities are loaded from the database without being tracked by EF. Changes made to entities are not automatically detected or persisted back to the database.
+
+Tracking: Entities are loaded from the database and automatically tracked by EF. Changes made to entities are detected, and EF generates the appropriate SQL statements to persist those changes back to the database when SaveChanges() is called.
+
+Benefits of Tracking:
+Simplifies data modification: EF tracks changes to entities, making it easier to modify entity properties and persist those changes back to the database.
+Enables change detection: EF automatically detects changes made to tracked entities, allowing you to update the database with minimal effort.
+Supports relationships: Tracking enables EF to manage relationships between entities and ensure referential integrity when persisting changes to related entities.
+Fluent API Configuration:
+In Entity Framework, you can configure the tracking behavior using the Fluent API. For example, you can specify whether entities should be tracked or not when loading data from the database:
+
+csharp
+Copy code
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity<EntityType>()
+        .ToTable("TableName")
+        .AsNoTracking(); // Disable tracking for this entity
+}
+In this example, .AsNoTracking() is used to disable tracking for the specified entity type.
+
+Considerations:
+Performance: Tracking can have performance implications, especially when dealing with large datasets. Disabling tracking (AsNoTracking()) for read-only scenarios can help improve performance.
+Concurrency: EF uses tracking to implement optimistic concurrency control, which helps prevent conflicting updates to the same data by multiple users.
+Detached Entities: Entities that are not tracked (detached) cannot be automatically updated by EF. You need to manually attach them to the context or use methods like Attach() or Update() to re-attach them before saving changes.
+Conclusion:
+Tracking is a fundamental concept in Entity Framework that enables automatic change detection and simplifies data modification. By understanding tracking modes and how to configure them using the Fluent API, you can optimize performance and control the behavior of EF when working with entities in your application.
+
+
+These are configurations for setting the query tracking behavior in Entity Framework Core. Let's look at each one:
+
+1. .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
+This configuration instructs Entity Framework Core to track all entities retrieved by queries. This means that any entities returned by queries will be automatically tracked by the DbContext. Any changes made to these entities will be detected by EF Core, and appropriate SQL statements will be generated when calling SaveChanges() to persist these changes back to the database.
+
+Usage:
+
+csharp
+Copy code
+var options = new DbContextOptionsBuilder<MyDbContext>()
+    .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
+    .Options;
+var dbContext = new MyDbContext(options);
+2. QueryTrackingBehavior.NoTracking
+This configuration tells Entity Framework Core not to track entities retrieved by queries. When entities are retrieved in this mode, they are considered detached from the DbContext, and EF Core does not monitor any changes made to them. This can improve performance, especially in read-only scenarios, as EF Core does not have to manage change tracking overhead.
+
+Usage:
+
+csharp
+Copy code
+var options = new DbContextOptionsBuilder<MyDbContext>()
+    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+    .Options;
+var dbContext = new MyDbContext(options);
+3. QueryTrackingBehavior.NoTrackingWithIdentityResolution
+This configuration combines the behavior of NoTracking with the ability to attempt to match entities retrieved by queries to existing tracked entities by their key values. If a tracked entity with the same key values already exists in the DbContext, EF Core will return the tracked entity instead of creating a new instance. This can be useful for maintaining consistency and reducing memory usage when working with detached entities.
+
+Usage:
+
+csharp
+Copy code
+var options = new DbContextOptionsBuilder<MyDbContext>()
+    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution)
+    .Options;
+var dbContext = new MyDbContext(options);
+Conclusion:
+These configurations allow you to control how Entity Framework Core tracks entities retrieved by queries, providing flexibility to balance performance and memory usage based on the requirements of your application. Choose the appropriate tracking behavior based on factors such as performance considerations, data modification requirements, and memory usage constraints.
+
+
+------------------------------------------------------------------
