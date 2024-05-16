@@ -533,7 +533,7 @@ async Task GetRawSql()
 async Task GetViews()
 {
     var details = await sqlitecontext.teamsandleaguesview.ToListAsync();
-    Console.WriteLine(string.Join(", ", details.Select(x => $"{x.Name} - {x.League}")));
+    Console.WriteLine(string.Join(", ", details.Select(x => $"{x.Name} - {x.LeagueName}")));
 }
 async Task AnonymousTypesAndRelatedData()
 {

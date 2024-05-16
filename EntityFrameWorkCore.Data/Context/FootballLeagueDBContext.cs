@@ -1,6 +1,4 @@
-﻿using Dumpify;
-using EntityFrameWorkCore.Data.Configuration;
-using EntityFrameWorkCore.Domain.DataModel;
+﻿using EntityFrameWorkCore.Domain.DataModel;
 using EntityFrameWorkCore.Domain.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
