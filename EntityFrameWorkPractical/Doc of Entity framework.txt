@@ -605,3 +605,28 @@ These configurations allow you to control how Entity Framework Core tracks entit
 
 
 ------------------------------------------------------------------
+
+DbContext is a class in Entity Framework that represents a session with the database, allowing you to query and save data. It's a core component of the Entity Framework and serves as the main entry point for accessing a database within your application.
+
+Here are some key points about DbContext:
+
+Data Context: DbContext acts as a bridge between your domain classes (entities) and the database. It provides access to a database through a set of DbSet<TEntity> properties, each representing a table or collection of entities in the database.
+
+Entity Management: DbContext tracks changes made to entities during their lifetime within the context. It automatically detects changes and generates the necessary SQL statements to persist those changes back to the database when you call the SaveChanges() method.
+
+Configuration: You can configure various aspects of the DbContext and the underlying database using fluent API configuration or data annotations. This includes specifying entity mappings, relationships, table names, and other database-specific settings.
+
+Lifetime Management: Typically, you create an instance of DbContext per request or per unit of work within your application. It's designed to be short-lived and scoped to a specific operation or transaction. You should dispose of the DbContext when it's no longer needed to release resources and ensure proper cleanup.
+
+Integration: DbContext integrates with various database providers, allowing you to work with different database systems such as SQL Server, MySQL, PostgreSQL, SQLite, etc. You can switch between different database providers without changing your application code significantly.
+
+In summary, DbContext is a fundamental component of Entity Framework that provides a high-level abstraction for interacting with databases, managing entities, and performing CRUD operations within your application. It simplifies data access and enables rapid development of database-driven applications.
+
+
+EF Core and Asp.Net
+Db Context behave differently in web application
+web application are disconnected since they are not accessed via the same network most times
+Each web request accesses the database on demad(scoped)
+No tracking is generally recommended
+Entity States must be explicitly updated before saving changes
+

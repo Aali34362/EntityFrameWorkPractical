@@ -22,7 +22,7 @@ public class FootballLeagueDBContext : DbContext
     {
         var folder = Environment.SpecialFolder.LocalApplicationData;
         var path = Environment.GetFolderPath(folder);
-        Console.WriteLine(path); 
+        Console.WriteLine(path);
         DbPath = Path.Combine(path, "FootballLeague_EFCore.db");
     }
 
@@ -31,7 +31,7 @@ public class FootballLeagueDBContext : DbContext
         //optionsBuilder
         //    .UseSqlServer("Server=UCHIHA_MADARA\\SQLEXPRESS;Database=FootballLeague;User=UCHIHA_MADARA\\aa882;Password=; " +
         //    "MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=true;Connection Timeout=6000;Trusted_Connection=True;");
-        
+
         optionsBuilder.UseSqlite($"Data Source={DbPath}")
             .UseLazyLoadingProxies()
             .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
@@ -46,6 +46,11 @@ public class FootballLeagueDBContext : DbContext
 
         modelBuilder.Entity<TeamsAndLeaguesView>()
             .HasNoKey().ToView("vw_TeamsAndLeagues");
+
+        //For using Functions in SqlServer.
+        //modelBuilder.HasDbFunction(typeof(FootballLeagueDBContext)
+        //    .GetMethod(nameof(GetEarliestTeamMatch), new[] { typeof(Guid) }))
+        //    .HasName("GetEarliestTeamMatch");
 
         ////modelBuilder.Entity<Team>()
         ////    .HasData(
@@ -150,6 +155,7 @@ public class FootballLeagueDBContext : DbContext
         ////    );
     }
 
+    public DateTime GetEarliestTeamMatch(Guid Id) => throw new NotImplementedException();
     static string GenerateRandomString(int length)
     {
         Random random = new Random();

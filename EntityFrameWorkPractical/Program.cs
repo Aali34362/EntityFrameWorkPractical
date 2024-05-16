@@ -527,7 +527,8 @@ async Task GetRawSql()
         .ExecuteSqlInterpolated($"Update teams set teamname = {someNewTeamName} where id = {id}");
     //Query Scalar or Non-Entity Type
     var leagueIds = sqlitecontext.Database.SqlQuery<Guid>($"Select * from Leagues").ToList();
-    
+    //Execute User-Defined Query
+    var earliestMatch = sqlitecontext.GetEarliestTeamMatch(Guid.Parse(""));
 }
 async Task GetViews()
 {
