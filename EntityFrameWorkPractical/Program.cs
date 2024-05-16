@@ -2,6 +2,7 @@
 using EntityFrameWorkCore.Domain.DataModel;
 using Microsoft.EntityFrameworkCore;
 using EntityFrameWorkPractical.ZoranHorvatProgrammingCode;
+using Microsoft.Data.Sqlite;
 
 #region Zoran
 var authors = new[]
@@ -37,25 +38,24 @@ string Printable(NameType name) =>
     name.Match((first, last) => $"{last},{first[..2]}", mononym => $"{mononym}");
 #endregion
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 using var sqlitecontext = new FootballLeagueDBContext();
 //We can run Update Migration Command from this piece of code
 ////await sqlitecontext.Database.MigrateAsync();
 
 
-//////////////////Delete
 #region Delete
 //await DeleteTeam();
 //await DeleteTables();
 //await ExecuteDeleteTeam();
 #endregion
-//////////////////Update
+
 #region Update
 //await UpdateNoTracking();
 //await UpdateTeam();
 //await ExecuteUpdateTeam();
 #endregion
-//////////////////Insert
+
 #region Insert
 //await InsertMatch();
 //await InsertMoreMatches();
@@ -66,7 +66,7 @@ using var sqlitecontext = new FootballLeagueDBContext();
 //await InsertParentChild();
 //await InsertParentwithChild();
 #endregion
-////////////////////Get////////////////////
+
 #region Get
 //await AnonymousTypesAndRelatedData();
 //await FilteringIncludes();
@@ -82,7 +82,6 @@ using var sqlitecontext = new FootballLeagueDBContext();
 //await GetIQueryable();
 #endregion
 
-///////////////////////Delete////////////////////////
 #region Delete
 async Task DeleteTeam()
 {
@@ -131,7 +130,7 @@ async Task ExecuteDeleteTeam()
          .ExecuteDeleteAsync();
 }
 #endregion
-///////////////////////Update////////////////////////
+
 #region Update
 async Task UpdateTeam()
 {
@@ -180,7 +179,7 @@ async Task ExecuteUpdateTeam()
 }
 
 #endregion
-///////////////////////INSERT////////////////////////
+
 #region Insert
 async Task InsertTeams()
 {
@@ -492,8 +491,49 @@ async Task InsertParentwithChild()
 #endregion
 
 #endregion
-/////////////////////GET///////////////////////////
+
 #region Get
+
+
+async Task GetRawSql()
+{
+    Console.WriteLine("Enter Team Name : ");
+    var teamName = Console.ReadLine();
+    var teamNameParam = new SqliteParameter("teamName", teamName);
+    //FromSqlRaw
+    var teamFromSqlRaw = sqlitecontext.teams.FromSqlRaw($"Select * from Teams where teamname = @teamName", teamName);
+    Console.WriteLine(string.Join(", ", teamFromSqlRaw.Select(x=> $"{x.TeamName}")));
+    //FromSql
+    var teamFromSql = sqlitecontext.teams.FromSql($"Select * from Teams where teamname = {teamName}");
+    Console.WriteLine(string.Join(", ", teamFromSql.Select(x => $"{x.TeamName}")));
+    //FromSqlInterpolated
+    var teamFromSqlInterpolated = sqlitecontext.teams.FromSqlInterpolated($"Select * from Teams where teamname = {teamName}");
+    Console.WriteLine(string.Join(", ", teamFromSqlInterpolated.Select(x => $"{x.TeamName}")));
+    //Mixing with LinQ
+    var teamsList = await sqlitecontext.teams.FromSql($"Select * from Teams")
+        .Where(q => q.Id == Guid.Parse(""))
+        .OrderBy(q => q.Id)
+        .Include("Leagues")
+        .ToListAsync();
+    Console.WriteLine(string.Join(", ", teamsList.Select(x => $"{x.TeamName}")));
+    //Executing Stored Procedures
+    var leagueId = Guid.Parse("");
+    var league = sqlitecontext.leagues
+        .FromSqlInterpolated($"EXEC dbo.StoredProcedureToGetLeagueNameHere {leagueId}");
+    //Non-querying statement
+    var someNewTeamName = "New Team Name";
+    var id = Guid.Parse("");
+    sqlitecontext.Database
+        .ExecuteSqlInterpolated($"Update teams set teamname = {someNewTeamName} where id = {id}");
+    //Query Scalar or Non-Entity Type
+    var leagueIds = sqlitecontext.Database.SqlQuery<Guid>($"Select * from Leagues").ToList();
+    
+}
+async Task GetViews()
+{
+    var details = await sqlitecontext.teamsandleaguesview.ToListAsync();
+    Console.WriteLine(string.Join(", ", details.Select(x => $"{x.Name} - {x.League}")));
+}
 async Task AnonymousTypesAndRelatedData()
 {
     var teams = await sqlitecontext.teams
@@ -824,7 +864,7 @@ async Task GetFilteredTeams()
     }
 }
 #endregion
-//////////////////////////////////////////////////////////////////////////////////////////
+
 #region TP
 var yourClass = new YourClass();
 //await yourClass.GetAllTeams();
@@ -888,7 +928,7 @@ public class YourClass
     }
 }
 #endregion
-//////////////////////////////////////////////////////////////////////////////////////////
+
 #region TP Class
 public class TeamInfo
 {

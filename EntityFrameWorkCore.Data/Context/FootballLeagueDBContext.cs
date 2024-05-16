@@ -1,6 +1,7 @@
 ﻿using Dumpify;
 using EntityFrameWorkCore.Data.Configuration;
 using EntityFrameWorkCore.Domain.DataModel;
+using EntityFrameWorkCore.Domain.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -13,6 +14,7 @@ public class FootballLeagueDBContext : DbContext
     public DbSet<Coach> coaches { get; set; }
     public DbSet<League> leagues { get; set; }
     public DbSet<Match> matches { get; set; }
+    public DbSet<TeamsAndLeaguesView> teamsandleaguesview { get; set; }
     public string DbPath { get; private set; }
     // Private Set : This is similar to set, but it restricts access to the setter to within the class where the property is defined. It's useful when you want to allow external code to read the property but not modify it directly.
     //
@@ -41,6 +43,9 @@ public class FootballLeagueDBContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        modelBuilder.Entity<TeamsAndLeaguesView>()
+            .HasNoKey().ToView("vw_TeamsAndLeagues");
 
         ////modelBuilder.Entity<Team>()
         ////    .HasData(
