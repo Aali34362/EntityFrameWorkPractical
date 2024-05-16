@@ -40,14 +40,16 @@ public class LeaguesController(FootballLeagueApiDBContext context, IMapper mappe
     // PUT: api/Leagues/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutLeague(Guid id, League league)
+    public async Task<IActionResult> PutLeague(Guid id, LeagueDto league)
     {
-        if (id != league.Id)
+        League league1 = _mapper.Map<LeagueDto, League>(league);
+        league1.Id = id;
+        if (id == Guid.Empty )
         {
             return BadRequest();
         }
 
-        _context.Entry(league).State = EntityState.Modified;
+        _context.Entry(league1).State = EntityState.Modified;
 
         try
         {
@@ -71,7 +73,7 @@ public class LeaguesController(FootballLeagueApiDBContext context, IMapper mappe
     // POST: api/Leagues
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<League>> PostLeague(LeagueDto league)
+    public async Task<ActionResult<LeagueDetails>> PostLeague(LeagueDto league)
     {
         League league1 = _mapper.Map<LeagueDto, League>(league);
         _context.leagues.Add(league1);
