@@ -2,7 +2,7 @@
 
 namespace EntityFrameWorkCore.Domain.BaseModel;
 
-public abstract class BaseEntity
+public class BaseEntity
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Crtd_User { get; set; } = string.Empty;

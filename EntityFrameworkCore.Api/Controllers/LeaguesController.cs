@@ -2,39 +2,38 @@
 using Microsoft.EntityFrameworkCore;
 using EntityFrameWorkCore.Data.Context;
 using EntityFrameWorkCore.Domain.DataModel;
+using EntityFrameWorkCore.Domain.Response;
+using AutoMapper;
 
 namespace EntityFrameworkCore.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class LeaguesController : ControllerBase
+public class LeaguesController(FootballLeagueApiDBContext context, IMapper mapper) : ControllerBase
 {
-    private readonly FootballLeagueApiDBContext _context;
-
-    public LeaguesController(FootballLeagueApiDBContext context)
-    {
-        _context = context;
-    }
+    private readonly FootballLeagueApiDBContext _context = context;
+    private readonly IMapper _mapper = mapper;
 
     // GET: api/Leagues
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<League>>> Getleagues()
+    public async Task<ActionResult<IEnumerable<LeagueList>>> Getleagues()
     {
-        return await _context.leagues.ToListAsync();
+        List<League> League = await _context.leagues.ToListAsync();
+        List<LeagueList> LeagueList = _mapper.Map<List<League>, List<LeagueList>>(League);
+        return LeagueList;
     }
 
     // GET: api/Leagues/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<League>> GetLeague(Guid id)
+    public async Task<ActionResult<LeagueDetails>> GetLeague(Guid id)
     {
-        var league = await _context.leagues.FindAsync(id);
-
+        League league = await _context.leagues.FindAsync(id);
+        LeagueDetails LeagueList = _mapper.Map<League, LeagueDetails>(league);
         if (league == null)
         {
             return NotFound();
         }
-
-        return league;
+        return LeagueList;
     }
 
     // PUT: api/Leagues/5
