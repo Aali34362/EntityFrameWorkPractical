@@ -4,6 +4,7 @@ using EntityFrameWorkCore.Data.Context;
 using EntityFrameWorkCore.Domain.DataModel;
 using EntityFrameWorkCore.Domain.Response;
 using AutoMapper;
+using EntityFrameworkCore.Api.DTO;
 
 namespace EntityFrameworkCore.Api.Controllers;
 
@@ -70,12 +71,13 @@ public class LeaguesController(FootballLeagueApiDBContext context, IMapper mappe
     // POST: api/Leagues
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<League>> PostLeague(League league)
+    public async Task<ActionResult<League>> PostLeague(LeagueDto league)
     {
-        _context.leagues.Add(league);
+        League league1 = _mapper.Map<LeagueDto, League>(league);
+        _context.leagues.Add(league1);
         await _context.SaveChangesAsync();
-
-        return CreatedAtAction("GetLeague", new { id = league.Id }, league);
+        LeagueDetails LeagueDetails = _mapper.Map<League, LeagueDetails>(league1);
+        return CreatedAtAction("GetLeague", new { id = LeagueDetails.Id }, LeagueDetails);
     }
 
     // DELETE: api/Leagues/5
