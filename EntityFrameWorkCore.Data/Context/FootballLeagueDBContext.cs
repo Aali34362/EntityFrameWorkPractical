@@ -1,4 +1,5 @@
-﻿using EntityFrameWorkCore.Domain.DataModel;
+﻿using EntityFrameWorkCore.Domain.BaseModel;
+using EntityFrameWorkCore.Domain.DataModel;
 using EntityFrameWorkCore.Domain.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -36,6 +37,12 @@ public class FootballLeagueDBContext : DbContext
             .LogTo(Console.WriteLine, LogLevel.Information)//Logging the information
             .EnableSensitiveDataLogging()// not to use in production just for educational purpose to look into data traversing 
             .EnableDetailedErrors();
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<string>().HaveMaxLength(100);
+        configurationBuilder.Properties<decimal>().HavePrecision(18,2);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -151,6 +158,28 @@ public class FootballLeagueDBContext : DbContext
         ////            Lst_Crtd_User = GenerateRandomString(7),
         ////        }
         ////    );
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var entries = ChangeTracker
+            .Entries<BaseEntity>()
+            .Where(x =>
+                x.State == EntityState.Modified
+             || x.State == EntityState.Added
+            );
+        foreach(var entry in entries)
+        {
+            entry.Entity.Lst_Crtd_Date = DateTime.Now;
+            entry.Entity.Lst_Crtd_User = "Admin";
+            if(entry.State == EntityState.Added)
+            {
+                entry.Entity.Crtd_Date = DateTime.Now;
+                entry.Entity.Crtd_User = "Users";
+            }
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 
     public DateTime GetEarliestTeamMatch(Guid Id) => throw new NotImplementedException();

@@ -331,6 +331,7 @@ async Task InsertLeague()
 }
 async Task InsertMatch()
 {
+    var transaction = sqlitecontext.Database.BeginTransaction();
     var match = new Match
     {
         AwayTeamId = Guid.Parse("34D27B09-D2C0-49B9-A1C0-2098EAC6DB13"),
@@ -345,18 +346,26 @@ async Task InsertMatch()
     await sqlitecontext.SaveChangesAsync();
 
     /* Incorrect reference data  - Will give error*/
-    var match1 = new Match
+    try
     {
-        AwayTeamId = Guid.Parse("35786C24-7D1C-4643-A648-1BE00C1A57D8"),
-        HomeTeamId = Guid.Parse("6F2DB6B2-9EC0-4398-932D-81EAEBC485E4"),
-        HomeTeamScore = 0,
-        AwayTeamScore = 0,
-        Match_Date = new DateTime(2023, 10, 1),
-        TicketPrice = 20,
-    };
+        var match1 = new Match
+        {
+            AwayTeamId = Guid.Parse("35786C24-7D1C-4643-A648-1BE00C1A57D8"),
+            HomeTeamId = Guid.Parse("6F2DB6B2-9EC0-4398-932D-81EAEBC485E4"),
+            HomeTeamScore = 0,
+            AwayTeamScore = 0,
+            Match_Date = new DateTime(2023, 10, 1),
+            TicketPrice = 20,
+        };
 
-    await sqlitecontext.AddAsync(match1);
-    await sqlitecontext.SaveChangesAsync();
+        await sqlitecontext.AddAsync(match1);
+        await sqlitecontext.SaveChangesAsync();
+        transaction.Commit();
+    }
+    catch(Exception)
+    {
+        transaction.Rollback();
+    }
 }
 async Task InsertMoreMatches()
 {
@@ -494,7 +503,20 @@ async Task InsertParentwithChild()
 
 #region Get
 
-
+async Task GetTemporalDetails()
+{
+    //Need more to implement to get proper data
+    var teamHistory = sqlitecontext.teams
+        .TemporalAll()
+        .Where(q=>q.Id == Guid.Parse(""))
+        .Select(team => new
+        {
+            team.TeamName,
+            ValueFrom = EF.Property<DateTime>(team, "PeriodStart"),
+            ValueTo = EF.Property<DateTime>(team, "PeriodEnd"),
+        })
+        .ToList();
+}
 async Task GetRawSql()
 {
     Console.WriteLine("Enter Team Name : ");

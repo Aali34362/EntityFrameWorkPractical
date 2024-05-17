@@ -7,8 +7,8 @@ public class BaseEntity
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Crtd_User { get; set; } = string.Empty;
     public string Lst_Crtd_User { get; set; } = string.Empty;
-    public DateTime Crtd_Date { get; set; } = DateTimeOffset.UtcNow.DateTime;
-    public DateTime Lst_Crtd_Date { get; set; } = DateTimeOffset.UtcNow.DateTime;
+    public DateTime Crtd_Date { get; set; }
+    public DateTime Lst_Crtd_Date { get; set; }
     [DefaultValue(1)]
     public short Act_Ind { get; set; } = 1;
     [DefaultValue(0)]

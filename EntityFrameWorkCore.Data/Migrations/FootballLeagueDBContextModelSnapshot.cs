@@ -53,7 +53,7 @@ namespace EntityFrameWorkCore.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("coaches");
+                    b.ToTable("coaches", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameWorkCore.Domain.DataModel.League", b =>
@@ -87,7 +87,7 @@ namespace EntityFrameWorkCore.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("leagues");
+                    b.ToTable("leagues", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameWorkCore.Domain.DataModel.Match", b =>
@@ -140,7 +140,7 @@ namespace EntityFrameWorkCore.Data.Migrations
 
                     b.HasIndex("HomeTeamId");
 
-                    b.ToTable("matches");
+                    b.ToTable("matches", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameWorkCore.Domain.DataModel.RelationalModel.CoachAndTeam", b =>
@@ -180,7 +180,7 @@ namespace EntityFrameWorkCore.Data.Migrations
                     b.HasIndex("CoachId")
                         .IsUnique();
 
-                    b.ToTable("CoachAndTeam");
+                    b.ToTable("CoachAndTeam", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameWorkCore.Domain.DataModel.RelationalModel.TeamAndLeague", b =>
@@ -223,7 +223,7 @@ namespace EntityFrameWorkCore.Data.Migrations
                     b.HasIndex("TeamId")
                         .IsUnique();
 
-                    b.ToTable("TeamAndLeague");
+                    b.ToTable("TeamAndLeague", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameWorkCore.Domain.DataModel.Team", b =>
@@ -279,7 +279,7 @@ namespace EntityFrameWorkCore.Data.Migrations
                     b.HasIndex("TeamName")
                         .IsUnique();
 
-                    b.ToTable("teams");
+                    b.ToTable("teams", (string)null);
                 });
 
             modelBuilder.Entity("EntityFrameWorkCore.Domain.DataModel.Match", b =>

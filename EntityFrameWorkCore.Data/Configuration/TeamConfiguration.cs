@@ -13,6 +13,14 @@ internal class TeamConfiguration : IEntityTypeConfiguration<Team>
         
         builder.HasIndex(q => q.TeamName).IsUnique();
 
+        //builder.ToTable("Table", b=> b.IsTemporal());
+
+        //Composite Key
+        //builder.HasIndex(q => new { q.Coach,q.CoachId}).IsUnique();
+
+        builder.Property(q => q.TeamName).HasMaxLength(100).IsRequired();
+
+
         builder.HasMany(q => q.HomeMatches)
             .WithOne(q => q.HomeTeam)
             .HasForeignKey(q => q.HomeTeamId)
