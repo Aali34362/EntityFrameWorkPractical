@@ -43,6 +43,19 @@ using var sqlitecontext = new FootballLeagueDBContext();
 //We can run Update Migration Command from this piece of code
 ////await sqlitecontext.Database.MigrateAsync();
 
+//Concurrency Checks
+var team = sqlitecontext.teams.Find(Guid.Parse(""));
+team.TeamName = "New Team with Concurrency Check";
+team.Version = Guid.NewGuid();
+try
+{
+    await sqlitecontext.SaveChangesAsync();
+}
+catch (DbUpdateConcurrencyException ex)
+{
+    Console.WriteLine(ex.Message);
+}
+
 
 #region Delete
 //await DeleteTeam();
@@ -362,9 +375,10 @@ async Task InsertMatch()
         await sqlitecontext.SaveChangesAsync();
         transaction.Commit();
     }
-    catch(Exception)
+    catch (Exception)
     {
         transaction.Rollback();
+        //transaction.RollbackToSavepoint("CreatedLeague");
     }
 }
 async Task InsertMoreMatches()
@@ -508,7 +522,7 @@ async Task GetTemporalDetails()
     //Need more to implement to get proper data
     var teamHistory = sqlitecontext.teams
         .TemporalAll()
-        .Where(q=>q.Id == Guid.Parse(""))
+        .Where(q => q.Id == Guid.Parse(""))
         .Select(team => new
         {
             team.TeamName,
@@ -524,7 +538,7 @@ async Task GetRawSql()
     var teamNameParam = new SqliteParameter("teamName", teamName);
     //FromSqlRaw
     var teamFromSqlRaw = sqlitecontext.teams.FromSqlRaw($"Select * from Teams where teamname = @teamName", teamName);
-    Console.WriteLine(string.Join(", ", teamFromSqlRaw.Select(x=> $"{x.TeamName}")));
+    Console.WriteLine(string.Join(", ", teamFromSqlRaw.Select(x => $"{x.TeamName}")));
     //FromSql
     var teamFromSql = sqlitecontext.teams.FromSql($"Select * from Teams where teamname = {teamName}");
     Console.WriteLine(string.Join(", ", teamFromSql.Select(x => $"{x.TeamName}")));
@@ -560,12 +574,13 @@ async Task GetViews()
 async Task AnonymousTypesAndRelatedData()
 {
     var teams = await sqlitecontext.teams
-        .Select(q=> new TeamDetails {
+        .Select(q => new TeamDetails
+        {
             TeamId = q.Id,
             TeamName = q.TeamName,
             CoachName = q.Coach.Name,
-            TotalAwayGoals = q.AwayMatches.Sum(x=>x.AwayTeamScore),
-            TotalHomeGoals = q.AwayMatches.Sum(x=>x.HomeTeamScore),
+            TotalAwayGoals = q.AwayMatches.Sum(x => x.AwayTeamScore),
+            TotalHomeGoals = q.AwayMatches.Sum(x => x.HomeTeamScore),
 
         })
         .ToListAsync();
@@ -577,7 +592,7 @@ async Task FilteringIncludes()
     var teams = await sqlitecontext.teams
         .Include("Coach")
         .Include(q => q.HomeMatches
-                 .Where(q=>q.HomeTeamScore > 0))
+                 .Where(q => q.HomeTeamScore > 0))
         .ToListAsync();
     foreach (var team in teams)
     {
@@ -597,7 +612,7 @@ async Task GetLazyLoading()
     if (league.Teams.Any())
         Console.WriteLine(string.Join(", ", league.Teams.Select(x => $"{x.TeamName}")));
 
-    foreach(var leagues in await sqlitecontext.leagues.ToListAsync())
+    foreach (var leagues in await sqlitecontext.leagues.ToListAsync())
     {
         Console.WriteLine(leagues.Name);
         if (league.Teams.Any())

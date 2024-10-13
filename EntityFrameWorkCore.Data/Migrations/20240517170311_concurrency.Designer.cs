@@ -3,6 +3,7 @@ using System;
 using EntityFrameWorkCore.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityFrameWorkCore.Data.Migrations
 {
     [DbContext(typeof(FootballLeagueDBContext))]
-    partial class FootballLeagueDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240517170311_concurrency")]
+    partial class concurrency
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

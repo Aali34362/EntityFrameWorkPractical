@@ -20,6 +20,8 @@ internal class TeamConfiguration : IEntityTypeConfiguration<Team>
 
         builder.Property(q => q.TeamName).HasMaxLength(100).IsRequired();
 
+        ////builder.Property(q => q.Version).IsRowVersion();
+        builder.Property(q => q.Version).IsConcurrencyToken();
 
         builder.HasMany(q => q.HomeMatches)
             .WithOne(q => q.HomeTeam)

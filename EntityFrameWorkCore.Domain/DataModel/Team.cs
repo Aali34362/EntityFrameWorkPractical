@@ -1,5 +1,6 @@
 ﻿using EntityFrameWorkCore.Domain.BaseModel;
 using EntityFrameWorkCore.Domain.DataModel.RelationalModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace EntityFrameWorkCore.Domain.DataModel;
 

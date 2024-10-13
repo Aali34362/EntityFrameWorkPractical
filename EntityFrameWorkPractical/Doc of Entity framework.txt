@@ -630,5 +630,25 @@ Each web request accesses the database on demad(scoped)
 No tracking is generally recommended
 Entity States must be explicitly updated before saving changes
 
+Concurrency Conflicts
+Databases are used concurrenctly by multiple application instance, performing modifications to data independently of each other.
+When the same record gets modified by different instance, inconsistencies and data corruption can occur.
+Ef Core assumes that concurrency conflicts are relatively rare. This is called optimistic concurrency.
+
+Optimistic concurrency is implemented by configuring a property as a concurrency token.
+This token is loaded and tracked when an entity is queried and compared against the orginal value read by EF core, after an update or delete operation.
+Sql Server implements rowversion to check for the record versions.
+SqLite has no native support and has to be managed by application code.
+
+ Pessimistic Concurrency will have you lock the record before attempting to modify
+ This involves use a lock object or Semaphore(async operations)
+
+
+ --------------------------------------
+
+ Global Filters
+ Global query filters are predicates applied to all entities in a data model.
+ EF core can be configured to apply this predicate all LINQ queries involving records of those Entity Types and referenced records indirectly through Include() statement and navigation properties.
+ Common usage inclued soft deletes and multi - tenant applications.
 
 

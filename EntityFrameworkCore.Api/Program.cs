@@ -28,10 +28,15 @@ var connectionString = $"Data Source = {dbPath}";
 
 builder.Services.AddDbContext<FootballLeagueApiDBContext>(options =>
 {
-    options.UseSqlite(connectionString)
+    options.UseSqlite(connectionString, sqliteOptions => {
+        //sqliteOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+        sqliteOptions.CommandTimeout(30);
+    })
+    //.UseSqlServer(builder.Configuration.GetConnectionString("SqlDatabaseConnectionString"))
         //.UseLazyLoadingProxies()
         .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-        .LogTo(Console.WriteLine, LogLevel.Information);
+        .LogTo(Console.WriteLine, LogLevel.Information)
+        ;
     if(!builder.Environment.IsProduction())
     {
         options.EnableSensitiveDataLogging();

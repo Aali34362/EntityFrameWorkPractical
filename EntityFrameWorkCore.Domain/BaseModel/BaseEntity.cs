@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace EntityFrameWorkCore.Domain.BaseModel;
 
@@ -13,6 +14,12 @@ public class BaseEntity
     public short Act_Ind { get; set; } = 1;
     [DefaultValue(0)]
     public short Del_Ind { get; set; } = 0;
+    //For Sql Server Only
+    ////[Timestamp]
+    ////public byte[]? Version { get; set; }
+
+    [ConcurrencyCheck]
+    public Guid Version { get; set; }
 }
 
 //Creating abstract class because i dont want to instantiate it.

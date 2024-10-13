@@ -5,6 +5,7 @@ using EntityFrameWorkCore.Domain.ViewModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 
 namespace EntityFrameWorkCore.Data.Context;
@@ -96,7 +97,12 @@ public class FootballLeagueApiDbContextFactory : IDesignTimeDbContextFactory<Foo
         var dbPath = Path.Combine(path, sqliteDatabaseName);
 
         var optionsBuilder = new DbContextOptionsBuilder<FootballLeagueApiDBContext>();
-        optionsBuilder.UseSqlite($"Data Source = {dbPath}");
+        optionsBuilder.UseSqlite($"Data Source = {dbPath}")
+            .UseLazyLoadingProxies()
+            .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
+            .LogTo(Console.WriteLine, LogLevel.Information)
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors(); 
 
         return new FootballLeagueApiDBContext(optionsBuilder.Options);
     }

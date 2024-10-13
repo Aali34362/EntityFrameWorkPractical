@@ -177,6 +177,7 @@ public class FootballLeagueDBContext : DbContext
                 entry.Entity.Crtd_Date = DateTime.Now;
                 entry.Entity.Crtd_User = "Users";
             }
+            entry.Entity.Version = Guid.NewGuid();
         }
 
         return base.SaveChangesAsync(cancellationToken);
